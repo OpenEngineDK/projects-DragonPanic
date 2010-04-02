@@ -107,7 +107,7 @@ GeometryNode* HeightMap::ConstructGeometry(ITexture2DPtr texture) {
                 face->texc[t] = Vector<2,float>(tex[j][0], tex[j][1]);
                 
                 if (t==2) {
-                    face->mat->texr = texture;
+                    face->mat->AddTexture(texture);
                     faces->Add(face);
                 }
             }
