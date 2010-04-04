@@ -67,7 +67,7 @@
 #include <Sound/MusicPlayer.h>
 #include <Resources/VorbisResource.h>
 
-#include <Meta/GLUT.h>
+//#include <Meta/GLUT.h>
 
 // NEW OEPARTICLESYSTEM TEST
 #include <ParticleSystem/ParticleSystem.h>
@@ -424,7 +424,7 @@ void SetupScene(Config& config) {
     ITexture2DPtr texture =
       ResourceManager<ITexture2D>::Create("Island/ground.tga");
 
-    HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 2);
+    HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
 
     Island* island = new Island(heightMap);
     config.scene->AddNode(island);
