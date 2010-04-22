@@ -32,6 +32,7 @@
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/TextureLoader.h>
 #include <Renderers/OpenGL/ColorStereoRenderer.h>
+#include <Renderers/OpenGL/SplitStereoRenderer.h>
 
 // Resources
 #include <Resources/IModelResource.h>
@@ -285,8 +286,8 @@ void SetupDisplay(Config& config) {
         /*config.viewport      != NULL*/)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.env = new SDLEnvironment(800, 600);
-    //config.frame         = new SDLFrame(1024, 768, 32, FRAME_FULLSCREEN);    
+    //config.env = new SDLEnvironment(800, 600);
+    config.env         = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);    
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
@@ -349,17 +350,20 @@ void SetupRendering(Config& config) {
         .Attach( *(new Renderers::OpenGL::LightRenderer(/**config.viewport*/)) );
 
 
-    ColorStereoRenderer* stereo = new ColorStereoRenderer();
+    ColorStereoRenderer* colorstereo = new ColorStereoRenderer();
+    config.frame->InitializeEvent().Attach(*colorstereo);
+    config.frame->DeinitializeEvent().Attach(*colorstereo);
+    SplitStereoRenderer* splitstereo = new SplitStereoRenderer();
+    config.frame->InitializeEvent().Attach(*splitstereo);
+    config.frame->DeinitializeEvent().Attach(*splitstereo);
     config.frame->InitializeEvent().Attach(*config.renderer);
-
+    config.frame->DeinitializeEvent().Attach(*config.renderer);
+    
     // config.frame->RedrawEvent().Attach(*config.renderer);
 
-    config.frame->RedrawEvent().Attach(*stereo);
-    stereo->RedrawEvent().Attach(*config.renderer);
+    config.frame->RedrawEvent().Attach(*splitstereo);
+    splitstereo->RedrawEvent().Attach(*config.renderer);
 
-    config.frame->DeinitializeEvent().Attach(*config.renderer);
-    config.frame->InitializeEvent().Attach(*stereo);
-    config.frame->DeinitializeEvent().Attach(*stereo);
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
