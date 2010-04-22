@@ -39,11 +39,9 @@ darcs-dev /extensions/CairoResource fh.daimi.au.dk:/users/cgd/code/extensions/Ca
 darcs /extensions/OpenALSoundSystem http://openengine.dk/code/extensions/OpenALSoundSystem
 darcs /extensions/VorbisResource    http://openengine.dk/code/extensions/VorbisResource
 darcs /extensions/MusicPlayer       http://openengine.dk/code/extensions/MusicPlayer
-darcs /extensions/Shapes            http://openengine.dk/code/extensions/Shapes
 darcs-dev /extensions/OpenALSoundSystem fh.daimi.au.dk:/users/cgd/code/extensions/OpenALSoundSystem
 darcs-dev /extensions/VorbisResource    fh.daimi.au.dk:/users/cgd/code/extensions/VorbisResource
 darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extensions/MusicPlayer
-darcs-dev /extensions/Shapes            fh.daimi.au.dk:/users/cgd/code/extensions/Shapes
 
 #particle system
 darcs /extensions/OEParticleSystem http://openengine.dk/code/extensions/OEParticleSystem
