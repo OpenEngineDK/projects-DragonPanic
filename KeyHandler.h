@@ -42,6 +42,7 @@ namespace OpenEngine {
     }
     namespace Display {
         class Camera;
+        class IFrame;
     }
     namespace Scene {
         class TransformationNode;

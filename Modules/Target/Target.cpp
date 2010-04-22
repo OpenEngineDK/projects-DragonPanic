@@ -61,7 +61,7 @@ Target::TargetRenderNode::TargetRenderNode() {
 void Target::TargetRenderNode::SetTarget(Target* target) {
     this->target = target;
 }
-void Target::TargetRenderNode::Apply(IRenderingView* rv) {
+void Target::TargetRenderNode::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     // Draw target
     if (target->active) {
         glColor3f( 0.8, 0.0, 0.0 );

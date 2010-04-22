@@ -59,16 +59,18 @@ using OpenEngine::Core::Event;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
 using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Utils::Timer;
 using OpenEngine::Sound::ISoundSystem;
 using OpenEngine::Math::RandomGenerator;
 using OpenEngine::Scene::ISceneNode;
 using OpenEngine::Effects::TextEffect;
+using OpenEngine::Scene::ISceneNodeVisitor;
 
 #define numberOfBoids 49 //must be a square number, 9, 16, 25, 36...
 
-class BoidsSystem : public IListener<InitializeEventArg>,
-                    public IListener<ProcessEventArg>, public RenderNode {
+class BoidsSystem : public IListener<Core::InitializeEventArg>,
+                    public IListener<Core::ProcessEventArg>, public RenderNode {
                     //                    public IListener<ParticleSystemEventArg> {
 private:
     TextEffect textEffect;
@@ -82,12 +84,12 @@ public:
     ~BoidsSystem();
     void toggleRenderState();
 
-    void Handle(InitializeEventArg arg);
-    void Handle(ProcessEventArg arg);
+    void Handle(Core::InitializeEventArg arg);
+    void Handle(Core::ProcessEventArg arg);
 
     void ResetBoids(bool first = false);
 
-    virtual void Apply(IRenderingView* rv);
+    virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
   
     //void Handle(ParticleSystemEventArg arg);
     void Explosion(Vector<3,float> position, float strength);

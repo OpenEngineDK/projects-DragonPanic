@@ -164,7 +164,7 @@ float OscSurface::GaussPeak(float my_x, float my_y,
     return ( exp( -(xn*xn + yn*yn) ) );
 }
 
-void OscSurface::Apply(IRenderingView* rv) {
+void OscSurface::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     float hx = 1.0/(M-1);
     float hz = aspect/(N-1);
 
@@ -206,7 +206,7 @@ void OscSurface::Apply(IRenderingView* rv) {
     glEnd();
 
 
-    VisitSubNodes(*rv);
+    VisitSubNodes(v);
 
     glPopMatrix();
 }

@@ -149,7 +149,7 @@ void Dragon::Handle(InitializeEventArg arg) {
     moveNeckBack = 5.0;
 }
 
-void Dragon::Apply(IRenderingView* rv) {
+void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
   /* debug lines
   list<Line*>::iterator i;
   for(i=bluelines.begin(); i != bluelines.end(); ++i)
@@ -187,7 +187,7 @@ void Dragon::Apply(IRenderingView* rv) {
     headNode->SetMatrix(m);
   */
   
-  VisitSubNodes(*rv);
+  VisitSubNodes(v);
   //glPopMatrix();
 }
 

@@ -23,8 +23,9 @@ namespace OpenEngine {
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Scene::TransformationNode;
+using OpenEngine::Scene::ISceneNodeVisitor;
 using namespace std;
 
 class Island : public RenderNode {
@@ -44,7 +45,7 @@ public:
     Island(HeightMap* heightMap);
     ~Island();
 
-    virtual void Apply(IRenderingView* rv);
+    virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
 
     void toggleRenderState();
 };

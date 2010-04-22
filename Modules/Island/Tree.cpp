@@ -13,7 +13,7 @@ Tree::Tree(Vector<3,float> position) {
 Tree::~Tree() {
 }
 
-void Tree::Apply(IRenderingView* rv) {
+void Tree::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     glColor3f( 0.25, 0.35, 0.10 );
 
     glPushMatrix();
@@ -30,5 +30,5 @@ void Tree::Apply(IRenderingView* rv) {
     OpenGLUtil::GLSolidCube( 0.6 );
     glPopMatrix();
 
-    VisitSubNodes(*rv);
+    VisitSubNodes(v);
 }

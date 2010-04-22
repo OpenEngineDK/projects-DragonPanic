@@ -26,7 +26,8 @@ using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::DeinitializeEventArg;
 using OpenEngine::Scene::RenderNode;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Scene::ISceneNodeVisitor;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Utils::Timer;
 
@@ -63,7 +64,7 @@ public:
   virtual ~OscSurface();
 
   void Handle(ProcessEventArg arg);
-  virtual void Apply(IRenderingView* rv);
+  void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
 
   void createRipple(float x, float z, float width, float height);  
 };

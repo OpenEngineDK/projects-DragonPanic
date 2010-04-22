@@ -10,6 +10,8 @@
 #include <Scene/RenderNode.h>
 #include <Resources/ITexture2D.h>
 
+#include <Renderers/IRenderingView.h>
+
 #include <string>
 #include <list>
 
@@ -21,10 +23,6 @@ class Tube;
 class BreathWeapon;
 class BoidsSystem;
 class OEFireBall;
-
-namespace OldParticle {
-    class ParticleSystem;
-}
 
 namespace OpenEngine {
     namespace ParticleSystem {
@@ -46,9 +44,10 @@ using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Scene::TransformationNode;
+using OpenEngine::Scene::ISceneNodeVisitor;
 
 using OpenEngine::Geometry::Line;
 using std::list;
@@ -56,7 +55,7 @@ using std::string;
 
 using namespace OpenEngine::Resources;
 
-class Dragon : public IListener<InitializeEventArg>,
+class Dragon : public IListener<OpenEngine::Core::InitializeEventArg>,
   public IListener<ProcessEventArg>, public RenderNode {
 public:
     bool enabled;
@@ -69,10 +68,10 @@ public:
     ~Dragon();
     void toggleRenderState();
     
-    void Handle(InitializeEventArg arg);
-    void Handle(ProcessEventArg arg);
+    void Handle(OpenEngine::Core::InitializeEventArg arg);
+    void Handle(OpenEngine::Core::ProcessEventArg arg);
 
-    virtual void Apply(IRenderingView* rv);
+    virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
     
     void OnLogicEnter(float timeStep);
     float jawPos;

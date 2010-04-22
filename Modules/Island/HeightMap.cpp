@@ -48,8 +48,8 @@ HeightMap::HeightMap(UCharTexture2DPtr heightMap,
     this->AddNode(geometry);
 }
 
-void HeightMap::Apply(IRenderingView* rv) {
-    VisitSubNodes(*rv);
+void HeightMap::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
+    VisitSubNodes(v);
 }
 
 HeightMap::~HeightMap() {

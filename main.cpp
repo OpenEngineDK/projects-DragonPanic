@@ -31,6 +31,7 @@
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/TextureLoader.h>
+#include <Renderers/OpenGL/ColorStereoRenderer.h>
 
 // Resources
 #include <Resources/IModelResource.h>
@@ -67,6 +68,7 @@
 #include <Sound/MusicPlayer.h>
 #include <Resources/VorbisResource.h>
 
+
 //#include <Meta/GLUT.h>
 
 // NEW OEPARTICLESYSTEM TEST
@@ -96,6 +98,7 @@ using namespace OpenEngine::Logging;
 using namespace OpenEngine::Devices;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Renderers;
+using namespace OpenEngine::Renderers::OpenGL;
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Utils;
 using namespace OpenEngine::Sound;
@@ -106,7 +109,7 @@ struct Config {
     EventProfiler         prof;
     IEnvironment*         env;
     IFrame*               frame;
-    Viewport*             viewport;
+    // Viewport*             viewport;
     IViewingVolume*       viewingvolume;
     FollowCamera*         camera;
     Frustum*              frustum;
@@ -133,7 +136,7 @@ struct Config {
         : engine(engine)
         , env(NULL)
         , frame(NULL)
-        , viewport(NULL)
+        // , viewport(NULL)
         , viewingvolume(NULL)
         , camera(NULL)
         , frustum(NULL)
@@ -203,10 +206,10 @@ int main(int argc, char** argv) {
     // Start up the engine.
     engine->Start();
 
-// #if OE_DEBUG
+#ifdef OE_DEBUG
     // Print out any profiling info
     config.prof.DumpInfo();
-// #endif
+#endif
 
     // release event system
     // post condition: scene and modules are not processed
@@ -278,18 +281,19 @@ void SetupDisplay(Config& config) {
     if (config.frame         != NULL ||
         config.viewingvolume != NULL ||
         config.camera        != NULL ||
-        config.frustum       != NULL ||
-        config.viewport      != NULL)
+        config.frustum       != NULL //||
+        /*config.viewport      != NULL*/)
         throw Exception("Setup display dependencies are not satisfied.");
 
     config.env = new SDLEnvironment(800, 600);
     //config.frame         = new SDLFrame(1024, 768, 32, FRAME_FULLSCREEN);    
-    config.frame         = &config.env->GetFrame();
+    config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
+    config.frame->SetViewingVolume(config.camera);
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
-    config.viewport      = new Viewport(*config.frame);
-    config.viewport->SetViewingVolume(config.camera);
+    // config.viewport      = new Viewport(*config.frame);
+    // config.viewport->SetViewingVolume(config.camera);
 
     // config.engine.InitializeEvent().Attach(*config.frame);
     // config.engine.ProcessEvent().Attach(*config.frame);
@@ -318,18 +322,20 @@ void SetupDevices(Config& config) {
 }
 
 void SetupRendering(Config& config) {
-    if (config.viewport == NULL ||
+    if (//config.viewport == NULL ||
+        config.frame == NULL ||
         config.renderer != NULL ||
         config.camera == NULL ||
         config.soundsystem == NULL )
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
-    config.renderer = new OpenGL::Renderer(config.viewport);
+    config.renderer = new OpenGL::Renderer(/*config.viewport*/);
     //config.renderer = new FBOBufferedRenderer(config.viewport);
+    //config.renderer = new GLCopyBufferedRenderer(config.viewport);
 
     // Setup a rendering view
-    IRenderingView* rv = new OpenGL::RenderingView(*config.viewport);
+    IRenderingView* rv = new OpenGL::RenderingView(/**config.viewport*/);
     config.renderer->ProcessEvent().Attach(*rv);
 
     // Add rendering initialization tasks
@@ -340,11 +346,20 @@ void SetupRendering(Config& config) {
     config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
-        .Attach( *(new Renderers::OpenGL::LightRenderer(*config.viewport)) );
+        .Attach( *(new Renderers::OpenGL::LightRenderer(/**config.viewport*/)) );
 
-    config.engine.InitializeEvent().Attach(*config.renderer);
-    config.engine.ProcessEvent().Attach(*config.renderer);
-    config.engine.DeinitializeEvent().Attach(*config.renderer);
+
+    ColorStereoRenderer* stereo = new ColorStereoRenderer();
+    config.frame->InitializeEvent().Attach(*config.renderer);
+
+    // config.frame->RedrawEvent().Attach(*config.renderer);
+
+    config.frame->RedrawEvent().Attach(*stereo);
+    stereo->RedrawEvent().Attach(*config.renderer);
+
+    config.frame->DeinitializeEvent().Attach(*config.renderer);
+    config.frame->InitializeEvent().Attach(*stereo);
+    config.frame->DeinitializeEvent().Attach(*stereo);
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
@@ -440,8 +455,8 @@ void SetupScene(Config& config) {
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
-    timeModifier->ProcessEvent().Attach(*oscs);
-    tpNode->AddNode(oscs);
+    // timeModifier->ProcessEvent().Attach(*oscs);
+    // tpNode->AddNode(oscs);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,
@@ -482,7 +497,8 @@ void SetupScene(Config& config) {
     vaT.Transform(*config.scene);
 
     // Supply the scene to the renderer
-    config.renderer->SetSceneRoot(config.scene);
+    logger.info << "scene: " << config.scene << logger.end;
+    config.frame->SetScene(config.scene);
 
     //HUD
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_QUEUED);
@@ -494,7 +510,7 @@ void SetupScene(Config& config) {
 }
 
 void SetupDebugging(Config& config) {
-// #if OE_DEBUG
+#ifdef OE_DEBUG
     // main engine events
     config.prof.Profile<ProcessEventArg>
         ("Environment", config.engine.ProcessEvent(), *config.env);
@@ -514,8 +530,8 @@ void SetupDebugging(Config& config) {
     // time modified events
     config.prof.Profile<ProcessEventArg>
         ("Boids System",    config.timeModifier->ProcessEvent(), *config.boids);
-    config.prof.Profile<ProcessEventArg>
-        ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
+    // config.prof.Profile<ProcessEventArg>
+    //     ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
     config.prof.Profile<ProcessEventArg>
         ("OE Particle System", config.timeModifier->ProcessEvent(), *config.particlesystem);
 
@@ -538,7 +554,7 @@ void SetupDebugging(Config& config) {
                     << "dot -Tsvg scene.dot > scene.svg"
                     << logger.end;
     }
-// #endif
+#endif
 
     // FPS layer with cairo
     FPSSurfacePtr fps = FPSSurface::Create();

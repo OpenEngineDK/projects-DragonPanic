@@ -10,13 +10,16 @@
 #include <Scene/RenderNode.h>
 
 #include <Scene/TransformationNode.h>
+#include <Renderers/IRenderer.h>
+#include <Scene/ISceneNodeVisitor.h>
 
 class HeightMap;
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Scene::ISceneNodeVisitor;
+using OpenEngine::Renderers::RenderingEventArg;
 
 using OpenEngine::Scene::TransformationNode;
 
@@ -29,7 +32,7 @@ private:
         TargetRenderNode();
         virtual ~TargetRenderNode() {}
         void SetTarget(Target* target);
-        virtual void Apply(IRenderingView* rv);
+        virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
     };
 
     bool active;

@@ -68,11 +68,11 @@ Island::~Island() {
     // No need to delete height-map and trees as they are sub-nodes.
 }
 
-void Island::Apply(IRenderingView* rv) {
+void Island::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     // Draw trees
     if (renderTrees)
-        trees->Accept(*rv);
-    VisitSubNodes(*rv);
+        trees->Accept(v);
+    VisitSubNodes(v);
 }
 
 void Island::toggleRenderState(){

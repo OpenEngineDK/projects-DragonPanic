@@ -23,11 +23,12 @@ namespace OpenEngine {
 }
 
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Scene::RenderNode;
 using OpenEngine::Resources::ITexture2DPtr;
 using OpenEngine::Resources::UCharTexture2DPtr;
 using OpenEngine::Scene::GeometryNode;
+using OpenEngine::Scene::ISceneNodeVisitor;
 using std::string;
 
 class HeightMap : public RenderNode {
@@ -55,7 +56,7 @@ public:
               float scale, float heightRatio, int stepSize);
     virtual ~HeightMap();
 
-    virtual void Apply(IRenderingView* rv);
+    virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
     
     float HeightAt(float x, float z);
     Vector<3,float> HeightAt(Vector<3,float> p);

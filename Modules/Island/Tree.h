@@ -14,8 +14,9 @@ namespace OpenEngine {
 }
 
 using OpenEngine::Math::Vector;
-using OpenEngine::Renderers::IRenderingView;
+using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Scene::RenderNode;
+using OpenEngine::Scene::ISceneNodeVisitor;
 
 class Tree : public RenderNode {
 private:
@@ -24,7 +25,7 @@ public:
     Tree(Vector<3,float> position);
     virtual ~Tree();
 
-    virtual void Apply(IRenderingView* rv);
+    virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
 };
 
 #endif

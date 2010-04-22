@@ -21,6 +21,7 @@
 #include <Sound/MusicPlayer.h>
 #include <Scene/RenderStateNode.h>
 
+#include <Display/IFrame.h>
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;

@@ -98,11 +98,12 @@ void BoidsSystem::ResetBoids(bool first) {
 }
 
 
-void BoidsSystem::Apply(IRenderingView* rv) {
+void BoidsSystem::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     // Draw boids
     for (unsigned int i=0; i<numberOfShownBoids; i++) {
         boids[i]->draw();
     }
+    VisitSubNodes(v);
 }
 
 void BoidsSystem::Handle(ProcessEventArg arg) {
