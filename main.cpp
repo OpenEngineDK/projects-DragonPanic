@@ -286,8 +286,8 @@ void SetupDisplay(Config& config) {
         /*config.viewport      != NULL*/)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    //config.env = new SDLEnvironment(800, 600);
-    config.env         = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);    
+    config.env = new SDLEnvironment(800, 600);
+    //config.env           = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);    
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
@@ -359,11 +359,13 @@ void SetupRendering(Config& config) {
     config.frame->InitializeEvent().Attach(*config.renderer);
     config.frame->DeinitializeEvent().Attach(*config.renderer);
     
-    // config.frame->RedrawEvent().Attach(*config.renderer);
+    config.frame->RedrawEvent().Attach(*config.renderer);
 
-    config.frame->RedrawEvent().Attach(*splitstereo);
-    splitstereo->RedrawEvent().Attach(*config.renderer);
+    // config.frame->RedrawEvent().Attach(*splitstereo);
+    // splitstereo->RedrawEvent().Attach(*config.renderer);
 
+    // config.frame->RedrawEvent().Attach(*colorstereo);
+    // colorstereo->RedrawEvent().Attach(*config.renderer);
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
@@ -459,8 +461,8 @@ void SetupScene(Config& config) {
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
-    // timeModifier->ProcessEvent().Attach(*oscs);
-    // tpNode->AddNode(oscs);
+    timeModifier->ProcessEvent().Attach(*oscs);
+    tpNode->AddNode(oscs);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,
@@ -534,8 +536,8 @@ void SetupDebugging(Config& config) {
     // time modified events
     config.prof.Profile<ProcessEventArg>
         ("Boids System",    config.timeModifier->ProcessEvent(), *config.boids);
-    // config.prof.Profile<ProcessEventArg>
-    //     ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
+    config.prof.Profile<ProcessEventArg>
+        ("Osc Surface",     config.timeModifier->ProcessEvent(), *config.oscs);
     config.prof.Profile<ProcessEventArg>
         ("OE Particle System", config.timeModifier->ProcessEvent(), *config.particlesystem);
 
