@@ -2,7 +2,6 @@
 
 #include <Meta/OpenGL.h>
 #include "../../Common/OpenGLUtil.h"
-#include <Meta/GLUT.h>
 #include <Scene/RenderNode.h>
 #include <Renderers/IRenderingView.h>
 

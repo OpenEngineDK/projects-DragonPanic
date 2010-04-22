@@ -16,7 +16,6 @@
 #include <math.h>
 
 // OpenEngine Core
-#include <Meta/GLUT.h>
 #include <Math/Math.h>
 #include <Logging/Logger.h>
 #include <Scene/ISceneNode.h>

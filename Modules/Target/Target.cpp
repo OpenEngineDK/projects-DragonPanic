@@ -4,7 +4,6 @@
 #include "../../Common/OpenGLUtil.h"
 
 #include <Meta/OpenGL.h>
-#include <Meta/GLUT.h>
 #include <Logging/Logger.h>
 
 using namespace std;

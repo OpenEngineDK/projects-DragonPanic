@@ -5,7 +5,6 @@
 #include "../../Common/OpenGLUtil.h"
 
 #include <Math/Math.h>
-#include <Meta/GLUT.h>
 #include <math.h>
 
 using OpenEngine::Math::PI;
