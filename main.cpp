@@ -359,13 +359,14 @@ void SetupRendering(Config& config) {
     config.frame->InitializeEvent().Attach(*config.renderer);
     config.frame->DeinitializeEvent().Attach(*config.renderer);
     
-    config.frame->RedrawEvent().Attach(*config.renderer);
+    splitstereo->RedrawEvent().Attach(*config.renderer);
+    colorstereo->RedrawEvent().Attach(*config.renderer);
+ 
 
-    // config.frame->RedrawEvent().Attach(*splitstereo);
-    // splitstereo->RedrawEvent().Attach(*config.renderer);
-
-    // config.frame->RedrawEvent().Attach(*colorstereo);
-    // colorstereo->RedrawEvent().Attach(*config.renderer);
+    // Pick a stereo mode or no stereo at all
+    config.frame->RedrawEvent().Attach(*config.renderer);  // no stereo
+    //config.frame->RedrawEvent().Attach(*splitstereo);        // split screen stereo
+    //config.frame->RedrawEvent().Attach(*colorstereo);     // color stereo
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );

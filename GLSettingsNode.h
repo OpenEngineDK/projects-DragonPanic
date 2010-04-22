@@ -40,7 +40,7 @@ void Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
           float pFade = 1.4 * pctDone;
           Vector<4,float> color( 0.39*pFade, 0.45*pFade, 1.0*pFade, 1.0 );
           //Vector<4,float> color( 0.6*pFade, 0.6*pFade, 0.6*pFade, 1.0 );
-          arg.renderer.SetBackgroundColor(color);
+          arg.canvas.SetBackgroundColor(color);
       }
       glEnable(GL_COLOR_MATERIAL);
       VisitSubNodes(v);
