@@ -60,7 +60,7 @@ using namespace OpenEngine::Sound;
 
 using std::list;
 
-class KeyHandler : public IListener<ProcessEventArg>,
+class KeyHandler : public IListener<OpenEngine::Core::ProcessEventArg>,
 		   public IListener<KeyboardEventArg>,
 		   public IListener<JoystickButtonEventArg>,
 		   public IListener<JoystickAxisEventArg> {
@@ -114,7 +114,7 @@ public:
     void HandleUp(Key key);
     void HandleDown(Key key);
 
-    void Handle(ProcessEventArg arg);
+    void Handle(OpenEngine::Core::ProcessEventArg arg);
     void Handle(JoystickAxisEventArg arg);
     void Handle(JoystickButtonEventArg arg);
 

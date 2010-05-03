@@ -9,7 +9,7 @@ using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Scene::RenderNode;
 
-class GLSettingsNode : public IListener<ProcessEventArg>, public RenderNode {
+class GLSettingsNode : public IListener<OpenEngine::Core::ProcessEventArg>, public RenderNode {
 private:
   float timeSpend,time;
   bool done;
@@ -21,7 +21,7 @@ public:
       timer.Start();
   }
   
-  void Handle(ProcessEventArg arg) {
+  void Handle(OpenEngine::Core::ProcessEventArg arg) {
       unsigned int dt = timer.GetElapsedTimeAndReset().AsInt();
       float deltaTime = ((float)dt)/1000.0;
       if (done) return;
@@ -40,7 +40,7 @@ void Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
           float pFade = 1.4 * pctDone;
           Vector<4,float> color( 0.39*pFade, 0.45*pFade, 1.0*pFade, 1.0 );
           //Vector<4,float> color( 0.6*pFade, 0.6*pFade, 0.6*pFade, 1.0 );
-          arg.canvas.SetBackgroundColor(color);
+          arg.renderer.SetBackgroundColor(color);
       }
       glEnable(GL_COLOR_MATERIAL);
       VisitSubNodes(v);

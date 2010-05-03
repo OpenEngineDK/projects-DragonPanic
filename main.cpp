@@ -19,6 +19,7 @@
 #include <Display/Frustum.h>
 #include <Display/InterpolatedViewingVolume.h>
 #include <Display/ViewingVolume.h>
+#include <Display/OpenGL/RenderCanvas.h>
 // SDL implementation
 #include <Display/SDLEnvironment.h>
 #include <Display/HUD.h>
@@ -31,8 +32,8 @@
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/TextureLoader.h>
-#include <Renderers/OpenGL/ColorStereoRenderer.h>
-#include <Renderers/OpenGL/SplitStereoRenderer.h>
+#include <Display/OpenGL/SplitStereoCanvas.h>
+#include <Display/OpenGL/ColorStereoCanvas.h>
 
 // Resources
 #include <Resources/IModelResource.h>
@@ -100,6 +101,7 @@ using namespace OpenEngine::Devices;
 using namespace OpenEngine::Display;
 using namespace OpenEngine::Renderers;
 using namespace OpenEngine::Renderers::OpenGL;
+using namespace OpenEngine::Display::OpenGL;
 using namespace OpenEngine::Resources;
 using namespace OpenEngine::Utils;
 using namespace OpenEngine::Sound;
@@ -132,7 +134,7 @@ struct Config {
     OpenEngine::Renderers::TextureLoader* textureLoader;
     OpenEngine::ParticleSystem::ParticleSystem* particlesystem;
     OpenEngine::ParticleSystem::ParticleSystemTimer* pstimer;
-
+    IRenderCanvas* canvas;
     Config(IEngine& engine)
         : engine(engine)
         , env(NULL)
@@ -159,6 +161,7 @@ struct Config {
         , textureLoader(NULL)
         , particlesystem(NULL)
         , pstimer(NULL)
+        , canvas(NULL)
     {}
 };
 
@@ -291,7 +294,7 @@ void SetupDisplay(Config& config) {
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
-    config.frame->SetViewingVolume(config.camera);
+    // config.frame->SetViewingVolume(config.camera);
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
     // config.viewport      = new Viewport(*config.frame);
     // config.viewport->SetViewingVolume(config.camera);
@@ -331,12 +334,12 @@ void SetupRendering(Config& config) {
         throw Exception("Setup renderer dependencies are not satisfied.");
 
     // Create a renderer
-    config.renderer = new OpenGL::Renderer(/*config.viewport*/);
+    config.renderer = new Renderer(/*config.viewport*/);
     //config.renderer = new FBOBufferedRenderer(config.viewport);
     //config.renderer = new GLCopyBufferedRenderer(config.viewport);
 
     // Setup a rendering view
-    IRenderingView* rv = new OpenGL::RenderingView(/**config.viewport*/);
+    IRenderingView* rv = new RenderingView(/**config.viewport*/);
     config.renderer->ProcessEvent().Attach(*rv);
 
     // Add rendering initialization tasks
@@ -347,26 +350,18 @@ void SetupRendering(Config& config) {
     config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
-        .Attach( *(new Renderers::OpenGL::LightRenderer(/**config.viewport*/)) );
+        .Attach( *(new Renderers::OpenGL::LightRenderer()) );
 
-
-    ColorStereoRenderer* colorstereo = new ColorStereoRenderer();
-    config.frame->InitializeEvent().Attach(*colorstereo);
-    config.frame->DeinitializeEvent().Attach(*colorstereo);
-    SplitStereoRenderer* splitstereo = new SplitStereoRenderer();
-    config.frame->InitializeEvent().Attach(*splitstereo);
-    config.frame->DeinitializeEvent().Attach(*splitstereo);
-    config.frame->InitializeEvent().Attach(*config.renderer);
-    config.frame->DeinitializeEvent().Attach(*config.renderer);
-    
-    splitstereo->RedrawEvent().Attach(*config.renderer);
-    colorstereo->RedrawEvent().Attach(*config.renderer);
- 
 
     // Pick a stereo mode or no stereo at all
-    config.frame->RedrawEvent().Attach(*config.renderer);  // no stereo
-    //config.frame->RedrawEvent().Attach(*splitstereo);        // split screen stereo
-    //config.frame->RedrawEvent().Attach(*colorstereo);     // color stereo
+    //config.canvas = new RenderCanvas();
+    //config.canvas = new SplitStereoCanvas();
+    config.canvas = new ColorStereoCanvas();
+
+    config.canvas->SetViewingVolume(config.camera);
+    config.canvas->SetRenderer(config.renderer);
+    config.frame->SetCanvas(config.canvas);
+ 
 
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
@@ -504,8 +499,7 @@ void SetupScene(Config& config) {
     vaT.Transform(*config.scene);
 
     // Supply the scene to the renderer
-    logger.info << "scene: " << config.scene << logger.end;
-    config.frame->SetScene(config.scene);
+    config.canvas->SetScene(config.scene);
 
     //HUD
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_QUEUED);

@@ -56,7 +56,7 @@ using std::string;
 using namespace OpenEngine::Resources;
 
 class Dragon : public IListener<OpenEngine::Core::InitializeEventArg>,
-  public IListener<ProcessEventArg>, public RenderNode {
+  public IListener<OpenEngine::Core::ProcessEventArg>, public RenderNode {
 public:
     bool enabled;
 

@@ -110,7 +110,7 @@ void KeyHandler::Handle(KeyboardEventArg arg) {
     }
 }
 
-void KeyHandler::Handle(ProcessEventArg arg) {
+void KeyHandler::Handle(OpenEngine::Core::ProcessEventArg arg) {
 
     // @todo - this should be in a init handler
     mouse.HideCursor();

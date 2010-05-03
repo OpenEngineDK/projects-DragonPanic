@@ -89,7 +89,7 @@ DragonHUD::~DragonHUD() {
   delete pointSurface;
 }
 
-void DragonHUD::Handle(ProcessEventArg arg) {
+void DragonHUD::Handle(OpenEngine::Core::ProcessEventArg arg) {
     if (timeleft != gamestate.GetTimeLeft()) {
       timeleft = gamestate.GetTimeLeft();
       char timestring[255];

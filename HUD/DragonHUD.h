@@ -30,7 +30,7 @@ using namespace OpenEngine::Display;
 using namespace OpenEngine;
 using namespace OpenEngine::Resources;
 
-class DragonHUD : public IListener<ProcessEventArg> {
+class DragonHUD : public IListener<OpenEngine::Core::ProcessEventArg> {
 private:
     CairoTextTool* textTool;
     CairoResourcePtr timeTexture;
@@ -46,7 +46,7 @@ public:
               HUD& hud, TextureLoader& texLoader);
     virtual ~DragonHUD();
 
-    void Handle(ProcessEventArg arg);
+    void Handle(OpenEngine::Core::ProcessEventArg arg);
 };
 
 

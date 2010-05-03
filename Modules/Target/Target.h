@@ -23,7 +23,7 @@ using OpenEngine::Renderers::RenderingEventArg;
 
 using OpenEngine::Scene::TransformationNode;
 
-class Target : public IListener<ProcessEventArg> {
+class Target : public IListener<OpenEngine::Core::ProcessEventArg> {
 private:
 
     class TargetRenderNode : public RenderNode {
@@ -46,7 +46,7 @@ public:
     virtual ~Target();
 
     void SetActive(bool active);
-    void Handle(ProcessEventArg arg);
+    void Handle(OpenEngine::Core::ProcessEventArg arg);
     
     TransformationNode* GetTargetNode();
   
