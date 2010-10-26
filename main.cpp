@@ -251,13 +251,15 @@ void SetupSound(Config& config) {
         // setup the sound system
         config.soundsystem->SetMasterGain(1.0);
         config.engine.InitializeEvent().Attach(*config.soundsystem);
+        config.engine.ProcessEvent().Attach(*config.soundsystem);
         config.engine.DeinitializeEvent().Attach(*config.soundsystem);
 
         // setup the music player
         config.musicplayer->AddSound("Music/beak.ogg");
-//         config.musicplayer->AddSound("Music/defibrilation.ogg");
-//         config.musicplayer->AddSound("Music/glow.ogg");
-//         config.musicplayer->AddSound("Music/trouble.ogg");
+        config.musicplayer->AddSound("Music/defibrilation.ogg");
+        config.musicplayer->AddSound("Music/glow.ogg");
+        config.musicplayer->AddSound("Music/trouble.ogg");
+
         config.musicplayer->SetGain(0.3);
         config.musicplayer->Shuffle(true);
         config.musicplayer->Next();
@@ -277,6 +279,7 @@ void SetupResources(Config& config) {
     ResourceManager<IModelResource>::AddPlugin(new OBJPlugin());
     ResourceManager<ITexture2D>::AddPlugin(new SDLImagePlugin());
     ResourceManager<ISoundResource>::AddPlugin(new VorbisResourcePlugin());
+    ResourceManager<IStreamingSoundResource>::AddPlugin(new StreamingVorbisResourcePlugin());
 
     config.resourcesLoaded = true;
 }

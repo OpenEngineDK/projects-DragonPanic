@@ -240,6 +240,8 @@ void KeyHandler::HandleDown(Key key) {
     case KEY_q:
         dragon->ChargeFireball();
         break;
+    case KEY_g:
+        musicplayer.Next();
     case KEY_COMMA:
         musicplayer.SetGain(musicplayer.GetGain()-gainStep);
         break;
