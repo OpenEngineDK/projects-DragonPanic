@@ -11,6 +11,8 @@
 
 #include <Math/Vector.h>
 #include <ParticleSystem/ParticleSystem.h>
+#include <ParticleSystem/SimpleEmitter.h>
+#include <ParticleSystem/LinearValueModifier.h>
 #include <Renderers/TextureLoader.h>
 #include <Resources/ResourceManager.h>
 #include <Resources/ITexture2D.h>
@@ -18,33 +20,36 @@
 using OpenEngine::Math::Vector;
 using OpenEngine::Resources::ResourceManager;
 using OpenEngine::Resources::ITexture2D;
+using namespace OpenEngine::ParticleSystem;
 
 BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
-                           TextureLoader& textureLoader,
                            HeightMap& heightMap,
                            BoidsSystem& boidssystem): 
-    FireEffect(system,
-               200,     //numParticles
-               0.04,    //emitRate
-               6.0,     //number 
-               2.0,     //numberVar
-               2.1,     //life
-               0.5,     //lifeVar
-               0.09,    //angle
-               250.0,   //spin
-               100.0,   //spinVar
-               35.0,    //speed
-               5.0,     //speedVar
-               Vector<3,float>(0,0.295,0),       //antigravity
-               textureLoader),    
-    heightMod(heightMap),
-    boidsMod(boidssystem, 3000) {
-
+    emitter(new SimpleEmitter(system,
+                              200,     //numParticles
+                              0.02,    //emitRate
+                              2.1,     //life
+                              0.5,     //lifeVar
+                              0.09,    //angle
+                              0.0,   //spin
+                              0.0,   //spinVar
+                              45.0,    //speed
+                              5.0,     //speedVar
+                              0.0,     //size
+                              0.0      //sizeVar
+                              )),    
+            heightMod(heightMap),
+            boidsMod(boidssystem, 3000) {
+                
     ITexture2DPtr tex1 = 
-        ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
-    AddTexture(tex1);
-
-
+        // ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
+        ResourceManager<ITexture2D>::Create("star.jpg");
+    emitter->SetTexture(tex1);
+    emitter->SetGravity(Vector<3,float>(0,0.295,0));
+    
+    LinearValueModifier<SimpleEmitter::TYPE,Vector<4,float> >& colormod = emitter->GetColorModifier();
+    LinearValueModifier<SimpleEmitter::TYPE,float>&  sizem = emitter->GetSizeModifier();
+    
     // color modifier
     colormod.AddValue( .9, Vector<4,float>(0.1, 0.01, .01, .4)); // blackish
     colormod.AddValue( .7, Vector<4,float>( .4,  0.3,  .1, .6)); // redish
@@ -52,28 +57,35 @@ BreathWeapon::BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
     colormod.AddValue( .0, Vector<4,float>(0.2,  0.2,  .4, .3)); // blueish
 
     // size variations 
-    sizem.AddValue(1.0, 2); 
-    sizem.AddValue(.65, 6);
-    sizem.AddValue( .2, 4);    
-    sizem.AddValue( .0, 3);    
+    sizem.AddValue(1.0, 30); 
+    sizem.AddValue(.65, 25);
+    // sizem.AddValue( .2, 20);    
+    sizem.AddValue( .0, 20);    
     
     system.ProcessEvent().Attach(*this);
 }
 
 BreathWeapon::~BreathWeapon() {
-    system.ProcessEvent().Detach(*this);
+    //system.ProcessEvent().Detach(*this);
 } 
 
 void BreathWeapon::Handle(ParticleEventArg e) {
-    FireEffect::Handle(e);
-    for (particles->iterator.Reset(); 
-         particles->iterator.HasNext(); 
-         particles->iterator.Next()) {
+    emitter->Handle(e);
     
-        TYPE& particle = particles->iterator.Element();
+    for (emitter->GetParticles()->iterator.Reset(); 
+         emitter->GetParticles()->iterator.HasNext(); 
+         emitter->GetParticles()->iterator.Next()) {
+    
+        SimpleEmitter::TYPE& particle = emitter->GetParticles()->iterator.Element();
         heightMod.Process(particle);
-        boidsMod.Process(e.dt, particle);
-        
+        boidsMod.Process(e.dt, particle);        
     }
+}
 
+ISceneNode* BreathWeapon::GetSceneNode() {
+    return emitter;
+}
+
+void BreathWeapon::SetActive(bool active) {
+    emitter->SetActive(active);
 }

@@ -10,7 +10,7 @@
 #ifndef _DRAGON_PANIC_OE_FIRE_BALL_
 #define _DRAGON_PANIC_OE_FIRE_BALL_
 
-#include <Effects/FireEffect.h>
+// #include <Effects/FireEffect.h>
 
 #include "../Boid/BoidsSystem.h"
 #include "TransformationModifier.h"
@@ -21,16 +21,18 @@ namespace OpenEngine {
     namespace ParticleSystem {
         class ParticleSystem;
         class ParticleEventArg;
+        class SimpleEmitter;
     }
 
-    namespace Renderers {
-        class TextureLoader;
+    namespace Scene {
+        class ISceneNode;
     }
 }
 
-using OpenEngine::Effects::FireEffect;
+// using OpenEngine::Effects::FireEffect;
 using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::ParticleSystem::ParticleEventArg;
+using OpenEngine::ParticleSystem::SimpleEmitter;
 
 /**
  * Fire ball particle system using OEParticleSystem
@@ -38,15 +40,15 @@ using OpenEngine::ParticleSystem::ParticleEventArg;
  *
  * @class OEFireBall OEFireBall.h /DragonPanic/Modules/Particle/OEFireBall.h
  */
-class OEFireBall : public FireEffect {
+class OEFireBall : public IListener<ParticleEventArg> {
 private:
+    SimpleEmitter* emitter;
     Explosion exp;
-    TransformationModifier<TYPE> transMod;
+    // TransformationModifier<SimpleEmitter::TYPE> transMod;
     bool charging, firing;
     float charge, chargeStep, initLife, initSize, initSpeed;
 public:
     OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
-               TextureLoader& textureLoader, 
                HeightMap& heightMap,
                BoidsSystem& boidsSystem);
      
@@ -57,7 +59,7 @@ public:
     void Fire();
     void Reset();
     void SetTransformationNode(TransformationNode* node);
-
+    ISceneNode* GetSceneNode();
 };
 
 #endif

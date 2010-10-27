@@ -39,9 +39,7 @@ darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extension
 
 #particle system
 darcs /extensions/OEParticleSystem http://openengine.dk/code/extensions/OEParticleSystem
-darcs /extensions/Effects          http://openengine.dk/code/extensions/Effects
 darcs-dev /extensions/OEParticleSystem  fh.daimi.au.dk:/users/cgd/code/extensions/OEParticleSystem
-darcs-dev /extensions/Effects           fh.daimi.au.dk:/users/cgd/code/extensions/Effects
 
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
@@ -67,3 +65,4 @@ any /projects/DragonPanic/data      http://www.openengine.dk/data/images/Smoke.z
 any /projects/DragonPanic/data      http://www.openengine.dk/data/projects/DragonPanic/dragonsounds.tar.gz
 any /projects/DragonPanic/data/logo http://www.openengine.dk/data/images/logo/small.png
 any /projects/DragonPanic/data      http://www.openengine.dk/data/projects/DragonPanic/1.tga
+any /projects/DragonPanic/data      http://www.openengine.dk/data/images/star.jpg

@@ -23,36 +23,33 @@ namespace OpenEngine {
     namespace ParticleSystem {
         class ParticleSystem;
         class ParticleEventArg;
-    }
-
-    namespace Renderers {
-        class TextureLoader;
+        class SimpleEmitter;
     }
 }
 
-using OpenEngine::Effects::FireEffect;
 using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Math::Vector;
 
-//using OpenEngine::ParticleSystem::ParticleSystem;
 using OpenEngine::ParticleSystem::ParticleEventArg;
+using OpenEngine::ParticleSystem::SimpleEmitter;
+
 /**
  * Explosion particle system using OEParticleSystem
  * and Effect/FireEffect
  *
  * @class Explosion Explosion.h /DragonPanic/Modules/Particle/Explosion.h
  */
-class Explosion : public FireEffect {
+class Explosion : public IListener<ParticleEventArg> {
 private:
+    SimpleEmitter* emitter;
     TransformationNode tnode;
     float charge, initLife, initSize, initSpeed;
-    BoidsModifier<FireEffect::TYPE> boidsMod;
+    BoidsModifier<SimpleEmitter::TYPE> boidsMod;
     unsigned int maxEmits;
     BoidsSystem& boidsSystem;
 public:
     Explosion(OpenEngine::ParticleSystem::ParticleSystem& system,
-              TextureLoader& textureLoader,
               BoidsSystem& boidsSystem);
      
     virtual ~Explosion();
@@ -61,6 +58,8 @@ public:
     void Fire(Vector<3,float> pos);
     void SetCharge(float p);
     float GetCharge();
+
+    ISceneNode* GetSceneNode();
 };
 
 #endif

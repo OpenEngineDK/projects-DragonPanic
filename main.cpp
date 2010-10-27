@@ -73,9 +73,9 @@
 
 //#include <Meta/GLUT.h>
 
-// NEW OEPARTICLESYSTEM TEST
 #include <ParticleSystem/ParticleSystem.h>
-#include <Effects/FireEffect.h>
+#include <Renderers/OpenGL/ParticleRenderer.h>
+#include <ParticleSystem/SimpleEmitter.h>
 
 // from project
 #include "LightFader.h"
@@ -230,7 +230,6 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-
 void SetupParticleSystem(Config& config) {
     config.particlesystem = new ParticleSystem::ParticleSystem();
     
@@ -343,6 +342,9 @@ void SetupRendering(Config& config) {
     IRenderingView* rv = new RenderingView(/**config.viewport*/);
     config.renderer->ProcessEvent().Attach(*rv);
 
+    ParticleRenderer<SimpleEmitter::TYPE>* pr = new ParticleRenderer<SimpleEmitter::TYPE>();
+    config.renderer->ProcessEvent().Attach(*pr);
+
     // Add rendering initialization tasks
     config.textureLoader = new Renderers::TextureLoader(*config.renderer);
     config.renderer->PreProcessEvent().Attach(*config.textureLoader);
@@ -355,9 +357,10 @@ void SetupRendering(Config& config) {
 
 
     // Pick a stereo mode or no stereo at all
-    //config.canvas = new RenderCanvas();
+
+    config.canvas = new RenderCanvas();
     //config.canvas = new SplitStereoCanvas();
-    config.canvas = new ColorStereoCanvas();
+    //config.canvas = new ColorStereoCanvas();
 
     config.canvas->SetViewingVolume(config.camera);
     config.canvas->SetRenderer(config.renderer);
@@ -382,6 +385,7 @@ void SetupScene(Config& config) {
 
     RenderStateNode* renderStateNode = new RenderStateNode();
     renderStateNode->EnableOption(RenderStateNode::LIGHTING);
+    renderStateNode->EnableOption(RenderStateNode::BACKFACE);
     config.scene = renderStateNode;
 
     float fadetime = 3000.0 * 3.5;
@@ -458,8 +462,8 @@ void SetupScene(Config& config) {
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
-    timeModifier->ProcessEvent().Attach(*oscs);
-    tpNode->AddNode(oscs);
+    // timeModifier->ProcessEvent().Attach(*oscs);
+    // tpNode->AddNode(oscs);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,

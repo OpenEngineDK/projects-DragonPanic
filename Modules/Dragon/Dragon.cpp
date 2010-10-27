@@ -43,8 +43,8 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
 
     : heightMap(heightMap), target(target),  
       oeparticlesys(oeparticlesys), 
-      breathweapon(new BreathWeapon(oeparticlesys, textureLoader, *heightMap, boidssystem)),
-      fireball(new OEFireBall(oeparticlesys, textureLoader, *heightMap, boidssystem)),
+      breathweapon(new BreathWeapon(oeparticlesys, *heightMap, boidssystem)),
+      fireball(new OEFireBall(oeparticlesys, *heightMap, boidssystem)),
       particleRoot(particleRoot) {
 
     jawPos = 0.0f;
@@ -112,16 +112,16 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
     TransformationNode* breathTrans = new TransformationNode; // leak on dragon destroy
     breathTrans->Rotate(-0.5*PI,0.0,0.0);
     headNode->AddNode(breathTrans);
-    breathweapon->SetTransformationNode(breathTrans);
+    breathTrans->AddNode(breathweapon->GetSceneNode());
+    // breathweapon->SetTransformationNode(breathTrans);
     
     TransformationNode* ballTrans = new TransformationNode;    // leak on dragon destroy
     ballTrans->Move(0.0,-1,3.0);
     ballTrans->Rotate(-0.5*PI,0.0,0.0);
     headNode->AddNode(ballTrans);
-    fireball->SetTransformationNode(ballTrans);
+    ballTrans->AddNode(fireball->GetSceneNode());
+    // fireball->SetTransformationNode(ballTrans);
 
-    particleRoot->AddNode(breathweapon->GetSceneNode());
-    particleRoot->AddNode(fireball->GetSceneNode());
 }
 
 Dragon::~Dragon() {

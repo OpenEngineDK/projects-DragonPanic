@@ -21,38 +21,38 @@ namespace OpenEngine {
     namespace ParticleSystem {
         class ParticleSystem;
         class ParticleEventArg;
+        class SimpleEmitter;
     }
 
-    namespace Renderers {
-        class TextureLoader;
-    }
 }
 
-using OpenEngine::Effects::FireEffect;
-using OpenEngine::Renderers::TextureLoader;
 
 //using OpenEngine::ParticleSystem::ParticleSystem;
 using OpenEngine::ParticleSystem::ParticleEventArg;
+using OpenEngine::ParticleSystem::SimpleEmitter;
+
 /**
  * Breath Weapon particle system using OEParticleSystem
  * and Effect/FireEffect
  *
  * @class BreathWeapon BreathWeapon.h /DragonPanic/Modules/Particle/BreathWeapon.h
  */
-class BreathWeapon : public FireEffect {
+class BreathWeapon : public IListener<ParticleEventArg> {
 private:
-    HeightMapModifier<FireEffect::TYPE> heightMod;
-    BoidsModifier<FireEffect::TYPE> boidsMod;
-
+    SimpleEmitter* emitter;
+    HeightMapModifier<SimpleEmitter::TYPE> heightMod;
+    BoidsModifier<SimpleEmitter::TYPE> boidsMod;
 public:
     BreathWeapon(OpenEngine::ParticleSystem::ParticleSystem& system,
-                 TextureLoader& textureLoader,
                  HeightMap& heightMap,
                  BoidsSystem& boidsSystem);
     
     virtual ~BreathWeapon();
 
     void Handle(ParticleEventArg e);
+
+    ISceneNode* GetSceneNode();
+    void SetActive(bool active);
 
 };
 

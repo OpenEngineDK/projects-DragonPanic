@@ -69,10 +69,10 @@ public:
             deltapos = q.RotateVector(Vector<3,float>(0.0,-1.0,0.0)) * speed;
             tmpnode->SetPosition(pos);
             tmpnode->SetRotation(q);
-            fire.SetTransformationNode(tmpnode);
+            // fire.SetTransformationNode(tmpnode);
         }
         else {
-            fire.SetTransformationNode(node);
+            // fire.SetTransformationNode(node);
         }
     }
 
