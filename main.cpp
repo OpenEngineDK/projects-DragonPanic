@@ -32,8 +32,8 @@
 #include <Renderers/OpenGL/Renderer.h>
 #include <Renderers/OpenGL/RenderingView.h>
 #include <Renderers/TextureLoader.h>
-#include <Display/OpenGL/SplitStereoCanvas.h>
-#include <Display/OpenGL/ColorStereoCanvas.h>
+// #include <Display/OpenGL/SplitStereoCanvas.h>
+// #include <Display/OpenGL/ColorStereoCanvas.h>
 
 // Resources
 #include <Resources/IModelResource.h>
@@ -139,7 +139,6 @@ struct Config {
         : engine(engine)
         , env(NULL)
         , frame(NULL)
-        // , viewport(NULL)
         , viewingvolume(NULL)
         , camera(NULL)
         , frustum(NULL)
@@ -239,7 +238,6 @@ void SetupParticleSystem(Config& config) {
     config.engine.InitializeEvent().Attach(*config.particlesystem);
     //config.engine.ProcessEvent().Attach(*config.pstimer);
     config.engine.DeinitializeEvent().Attach(*config.particlesystem);
-
 }
 
 void SetupSound(Config& config) {
@@ -296,14 +294,8 @@ void SetupDisplay(Config& config) {
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
-    // config.frame->SetViewingVolume(config.camera);
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
-    // config.viewport      = new Viewport(*config.frame);
-    // config.viewport->SetViewingVolume(config.camera);
 
-    // config.engine.InitializeEvent().Attach(*config.frame);
-    // config.engine.ProcessEvent().Attach(*config.frame);
-    // config.engine.DeinitializeEvent().Attach(*config.frame);
 }
 
 void SetupDevices(Config& config) {
@@ -462,8 +454,8 @@ void SetupScene(Config& config) {
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
     //Vector<4,float> oscsColor(0.1f,0.25f,0.7f,0.7f); // water
     OscSurface* oscs = config.oscs = new OscSurface(heightMap,oscsColor);
-    // timeModifier->ProcessEvent().Attach(*oscs);
-    // tpNode->AddNode(oscs);
+    timeModifier->ProcessEvent().Attach(*oscs);
+    tpNode->AddNode(oscs);
 
     //@todo: Boids have transparent shadows
     BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,

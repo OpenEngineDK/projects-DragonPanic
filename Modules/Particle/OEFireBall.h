@@ -13,7 +13,7 @@
 // #include <Effects/FireEffect.h>
 
 #include "../Boid/BoidsSystem.h"
-#include "TransformationModifier.h"
+// #include "TransformationModifier.h"
 #include "HeightMapModifier.h"
 #include "Explosion.h"
 
@@ -46,7 +46,10 @@ private:
     Explosion exp;
     // TransformationModifier<SimpleEmitter::TYPE> transMod;
     bool charging, firing;
-    float charge, chargeStep, initLife, initSize, initSpeed;
+    float charge, chargeStep, initLife, initSize, initSpeed, speed, time;
+    TransformationNode* t, *tmp;
+    Vector<3,float> deltapos;
+    HeightMap& heightMap;
 public:
     OEFireBall(OpenEngine::ParticleSystem::ParticleSystem& system,
                HeightMap& heightMap,
@@ -58,7 +61,6 @@ public:
     void Charge();
     void Fire();
     void Reset();
-    void SetTransformationNode(TransformationNode* node);
     ISceneNode* GetSceneNode();
 };
 

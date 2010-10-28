@@ -113,15 +113,12 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
     breathTrans->Rotate(-0.5*PI,0.0,0.0);
     headNode->AddNode(breathTrans);
     breathTrans->AddNode(breathweapon->GetSceneNode());
-    // breathweapon->SetTransformationNode(breathTrans);
     
     TransformationNode* ballTrans = new TransformationNode;    // leak on dragon destroy
     ballTrans->Move(0.0,-1,3.0);
     ballTrans->Rotate(-0.5*PI,0.0,0.0);
     headNode->AddNode(ballTrans);
     ballTrans->AddNode(fireball->GetSceneNode());
-    // fireball->SetTransformationNode(ballTrans);
-
 }
 
 Dragon::~Dragon() {

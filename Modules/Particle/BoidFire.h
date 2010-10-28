@@ -10,41 +10,35 @@
 #ifndef _DRAGON_PANIC_BOID_FIRE_
 #define _DRAGON_PANIC_BOID_FIRE_
 
-#include <Effects/FireEffect.h>
-
-
 namespace OpenEngine {
     namespace ParticleSystem {
         class ParticleSystem;
-        class ParticleEventArg;
+        class SimpleEmitter;
     }
-
-    namespace Renderers {
-        class TextureLoader;
+    namespace Scene {
+        class ISceneNode;
     }
 }
 
-using OpenEngine::Effects::FireEffect;
-using OpenEngine::Renderers::TextureLoader;
+using OpenEngine::ParticleSystem::SimpleEmitter;
+using OpenEngine::Scene::ISceneNode;
 
-//using OpenEngine::ParticleSystem::ParticleSystem;
-using OpenEngine::ParticleSystem::ParticleEventArg;
 /**
  * Boid fire particle system using OEParticleSystem
  * and Effect/FireEffect
  *
  * @class BoidFire BoidFire.h /DragonPanic/Modules/Particle/BoidFire.h
  */
-class BoidFire : public FireEffect {
+class BoidFire {
 private:
+    SimpleEmitter* emitter;
 public:
-    BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system,
-             TextureLoader& textureLoader);
+    BoidFire(OpenEngine::ParticleSystem::ParticleSystem& system);
 
     virtual ~BoidFire();
 
-//     void Handle(ParticleEventArg e);
-
+    void SetActive(bool active);
+    ISceneNode* GetSceneNode();
 };
 
 #endif

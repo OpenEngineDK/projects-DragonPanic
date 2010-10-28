@@ -43,7 +43,7 @@ using OpenEngine::ParticleSystem::SimpleEmitter;
 class Explosion : public IListener<ParticleEventArg> {
 private:
     SimpleEmitter* emitter;
-    TransformationNode tnode;
+    TransformationNode* t, *tmp;
     float charge, initLife, initSize, initSpeed;
     BoidsModifier<SimpleEmitter::TYPE> boidsMod;
     unsigned int maxEmits;

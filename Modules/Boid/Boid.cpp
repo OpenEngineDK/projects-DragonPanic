@@ -46,12 +46,11 @@ Boid::Boid(HeightMap* heightMap, OscSurface* oscsurface, BoidsSystem* boidssyste
     this->oscsurface = oscsurface;
     this->boidssystem = boidssystem;
 
-    boidfire = new BoidFire(oeparticlesystem, texloader);
+    boidfire = new BoidFire(oeparticlesystem);
     boidfire->SetActive(false);
     fireTrans = new TransformationNode();
-    fireTrans->AddNode(boidfire->GetEmitter());
-    //boidfire->SetTransformationNode(fireTrans);
-    //particleRoot->AddNode(boidfire->GetSceneNode());
+    fireTrans->AddNode(boidfire->GetSceneNode());
+    particleRoot->AddNode(fireTrans);
     
     this->position = position;
     this->forward = forward.GetNormalize();
@@ -81,6 +80,8 @@ Boid::~Boid(){
     // @todo how to handle deallocation of the particle renderer?
     // particleRoot->RemoveNode(boidfire->GetSceneNode());
     // delete boidfire->GetSceneNode();
+    fireTrans->RemoveNode(boidfire->GetSceneNode());
+    particleRoot->RemoveNode(fireTrans);
     delete boidfire;
     delete fireTrans;
 }
@@ -225,7 +226,7 @@ void Boid::updatePhysics( double timeDelta ) {
 
 void Boid::updateLocomotion( double timeDelta ) {
     // TransformationNode* tn = boidfire->GetTransformationNode();
-    // if (tn) tn->SetPosition(position);
+    fireTrans->SetPosition(position);
     voice.SetPosition(position);
 
     Vector<3,float> normal = heightMap->NormalAt(position);
