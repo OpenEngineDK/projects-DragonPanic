@@ -18,7 +18,8 @@ float customFmod( float i, float mMod ){
 }
 
 void drawTriangleQuad(Vector<3,float> point[4], Vector<3,float> normal[4], bool flipDiagonal) {
-    int order[] = {0,1,2,2,3,0};
+    //int order[] = {0,1,2,2,3,0};
+    int order[] = {2,1,0,0,3,2};
     for (int i=0; i<6; i++) {
         int j = order[i];
         if (flipDiagonal) j = (j+1)%4;
