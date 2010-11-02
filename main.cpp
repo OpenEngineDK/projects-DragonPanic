@@ -377,7 +377,7 @@ void SetupScene(Config& config) {
 
     RenderStateNode* renderStateNode = new RenderStateNode();
     renderStateNode->EnableOption(RenderStateNode::LIGHTING);
-    renderStateNode->EnableOption(RenderStateNode::BACKFACE);
+    renderStateNode->DisableOption(RenderStateNode::BACKFACE);
     config.scene = renderStateNode;
 
     float fadetime = 3000.0 * 3.5;

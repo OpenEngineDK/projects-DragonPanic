@@ -38,8 +38,7 @@ darcs-dev /extensions/VorbisResource    fh.daimi.au.dk:/users/cgd/code/extension
 darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extensions/MusicPlayer
 
 #particle system
-darcs /extensions/OEParticleSystem http://openengine.dk/code/extensions/OEParticleSystem
-darcs-dev /extensions/OEParticleSystem  fh.daimi.au.dk:/users/cgd/code/extensions/OEParticleSystem
+dist /extensions/OEParticleSystem/OEParticleSystem.dist http://openengine.dk/code/extensions/OEParticleSystem/OEParticleSystem.dist
 
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
