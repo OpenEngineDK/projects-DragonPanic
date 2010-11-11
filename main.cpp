@@ -19,7 +19,8 @@
 #include <Display/Frustum.h>
 #include <Display/InterpolatedViewingVolume.h>
 #include <Display/ViewingVolume.h>
-#include <Display/OpenGL/RenderCanvas.h>
+#include <Display/RenderCanvas.h>
+#include <Display/OpenGL/TextureCopy.h>
 // SDL implementation
 #include <Display/SDLEnvironment.h>
 #include <Display/HUD.h>
@@ -349,8 +350,8 @@ void SetupRendering(Config& config) {
 
 
     // Pick a stereo mode or no stereo at all
+    config.canvas = new RenderCanvas(new Display::OpenGL::TextureCopy());
 
-    config.canvas = new RenderCanvas();
     //config.canvas = new SplitStereoCanvas();
     //config.canvas = new ColorStereoCanvas();
 
