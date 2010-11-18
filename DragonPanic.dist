@@ -48,6 +48,8 @@ win32 /libraries http://openengine.dk/data/libraries/dlls-win32.zip
 win32 /libraries http://openengine.dk/data/libraries/cairo-win32.zip
 win32 /libraries http://openengine.dk/data/libraries/openal-win32.zip
 win32 /libraries http://openengine.dk/data/libraries/vorbis-win32.zip
+win32 /libraries http://openengine.dk/data/libraries/sdlimage-win32.zip
+
 
 # os x libraries
 
