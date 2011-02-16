@@ -54,20 +54,26 @@ void Target::printTarget() {
   logger.info << target << logger.end;
 }
 
-Target::TargetRenderNode::TargetRenderNode() {
+void Target::toggleRenderState() {
+    rnode->render = !rnode->render;
+}
 
+Target::TargetRenderNode::TargetRenderNode() {
+    render = true;
 }
 void Target::TargetRenderNode::SetTarget(Target* target) {
     this->target = target;
 }
 void Target::TargetRenderNode::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
-    // Draw target
-    if (target->active) {
-        glColor3f( 0.8, 0.0, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.5 );
-    }
-    else {
-        glColor3f( 0.0, 0.8, 0.0 );
-        OpenGLUtil::GLSolidCube( 0.4 );
+    if (render) {
+        // Draw target
+        if (target->active) {
+            glColor3f( 0.8, 0.0, 0.0 );
+            OpenGLUtil::GLSolidCube( 0.5 );
+        }
+        else {
+            glColor3f( 0.0, 0.8, 0.0 );
+            OpenGLUtil::GLSolidCube( 0.4 );
+        }
     }
 }

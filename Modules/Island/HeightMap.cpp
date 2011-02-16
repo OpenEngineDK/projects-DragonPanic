@@ -180,14 +180,25 @@ Vector<3,float> HeightMap::HeightAt(Vector<3,float> p) {
 }
 
 Vector<3,float> HeightMap::NormalAt(Vector<3,float> p) {
-    float floatX = (p[0]-translate[0])/scale*(width-1);
-    float floatZ = (p[2]-translate[2])/scale*(height-1);
+    return NormalAt(p[0],p[2]);
+}
+
+Vector<3,float> HeightMap::NormalAt(float x, float y) {
+    float floatX = (x-translate[0])/scale*(width-1);
+    float floatZ = (y-translate[2])/scale*(height-1);
     return (
             Normal(int(floatX)  ,int(floatZ)  )*(1-fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
             Normal(int(floatX)+1,int(floatZ)  )*(  fmod(floatX,1.0f))*(1-fmod(floatZ,1.0f))+
             Normal(int(floatX)  ,int(floatZ)+1)*(1-fmod(floatX,1.0f))*(  fmod(floatZ,1.0f))+
             Normal(int(floatX)+1,int(floatZ)+1)*(  fmod(floatX,1.0f))*(  fmod(floatZ,1.0f))
             ).GetNormalize();
+}
+
+float HeightMap::SlopeAt(float x, float z) {
+    Vector<3,float> normal = NormalAt(x,z);
+    Vector<3,float> up(0.0f, 1.0f, 0.0f);
+    float dot = normal * up;
+    return acos(dot);
 }
 
 /**

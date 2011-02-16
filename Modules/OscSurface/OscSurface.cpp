@@ -15,6 +15,8 @@ using OpenEngine::Core::Exception;
 using OpenEngine::Utils::Convert;
 
 OscSurface::OscSurface(HeightMap* heightMap, Vector<4,float> color) : heightMap(heightMap), color(color) {
+    render = true;
+
     M = 80;
     N = 80;
     aspect = 1.0;
@@ -165,48 +167,52 @@ float OscSurface::GaussPeak(float my_x, float my_y,
 }
 
 void OscSurface::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
-    float hx = 1.0/(M-1);
-    float hz = aspect/(N-1);
-
     // draw the surface:
     glPushMatrix();
-    //glColor3f( 0.8, 0.25, 0.0 );
-    glTranslatef( translate[0], translate[1], translate[2]);
-    glScalef(scale,scale,scale);
 
-    glColor4f(color[0],color[1],color[2],color[3]);
+    if (render) {
+        float hx = 1.0/(M-1);
+        float hz = aspect/(N-1);
+        //glColor3f( 0.8, 0.25, 0.0 );
+        glTranslatef( translate[0], translate[1], translate[2]);
+        glScalef(scale,scale,scale);
 
-    glBegin( GL_TRIANGLES );
+        glColor4f(color[0],color[1],color[2],color[3]);
 
-    for (int i=0; i<(M-1); i++)
-        for (int j=0; j<(N-1); j++) {
-	    int x=-1, z=-1, xz=-1;
-            Vector<3,float> point[4];
-            Vector<3,float> normal[4];
+        glBegin( GL_TRIANGLES );
 
-            for (int c=0; c<4; c++) {
-                if (c==0) { x = i;   z = j;   }
-                else if (c==1) { x = i+1; z = j;   }
-                else if (c==2) { x = i+1; z = j+1; }
-                else if (c==3) { x = i;   z = j+1; }
-		else throw Exception("unknown index");
-                xz = x*N+z;
-                point[c] = Vector<3,float>(x*hx, zCur[xz]*15.0/120, z*hz);
-                Vector<3,float> norm(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
-                norm.Normalize();
-                normal[c] = norm;
+        for (int i=0; i<(M-1); i++)
+            for (int j=0; j<(N-1); j++) {
+                int x=-1, z=-1, xz=-1;
+                Vector<3,float> point[4];
+                Vector<3,float> normal[4];
+
+                for (int c=0; c<4; c++) {
+                    if (c==0) { x = i;   z = j;   }
+                    else if (c==1) { x = i+1; z = j;   }
+                    else if (c==2) { x = i+1; z = j+1; }
+                    else if (c==3) { x = i;   z = j+1; }
+                    else throw Exception("unknown index");
+                    xz = x*N+z;
+                    point[c] = Vector<3,float>(x*hx, zCur[xz]*15.0/120, z*hz);
+                    Vector<3,float> norm(z_norm[xz*3+0], 1.0f, z_norm[xz*3+1]);
+                    norm.Normalize();
+                    normal[c] = norm;
+                }
+
+                Vector<3,float> diagonalCross = (point[0]-point[2]) % (point[1]-point[3]);
+                bool flip = (diagonalCross[0]*diagonalCross[2]>0);
+
+                drawTriangleQuad(point,normal,flip);
             }
-
-            Vector<3,float> diagonalCross = (point[0]-point[2]) % (point[1]-point[3]);
-            bool flip = (diagonalCross[0]*diagonalCross[2]>0);
-
-            drawTriangleQuad(point,normal,flip);
-        }
-
-    glEnd();
-
+        glEnd();
+    }
 
     VisitSubNodes(v);
 
     glPopMatrix();
+}
+
+void OscSurface::toggleRenderState() {
+    render = !render;
 }

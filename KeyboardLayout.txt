@@ -12,20 +12,21 @@ Camera
   arrows    Rotate camera
   pg up     Zoom in
   pg down   Zoom out
-  z,x       Rotate camera on the z axis (roll)
-  f         Print current camera state
-  F1-F5     Different viewpoints
-  F9        Increase global scale (panorama only)
-  F10       Decrease global scale (panorama only)
+  F1-F5     Different viewpoints (currently disabled)
+  F9        Increase global scale (panorama only) (currently disabled)
+  F10       Decrease global scale (panorama only) (currently disabled)
 
 Time
 -----------------------------------------------------------
-  F11       Decrease time factor (slow motion)
-  F12       Increase time factor (time lapse)
-  p         Pause on/off
+  n         Decrease time factor (slow motion)
+  m         Increase time factor (time lapse)
+  space     Pause on/off
 
 Render states
 -----------------------------------------------------------
+  z  	    Toggle wireframe on the entire scene
+  x         Toggle textures on the entire scene
+  f         Toggle full screen (currently disabled)
   1         Toggle state on BoidsSystem
   2         Toggle state on Dragon
   3         Toggle state on Island
@@ -37,11 +38,8 @@ Render states
 
 General
 -----------------------------------------------------------
-  space     Skip intro credits
   r         Reset
   b         Reset boids
   t         Decrease boids alignment (weak flocking)
   y         Increase boids alignment (strong flocking)
-  home      Increase mouse/keyboard/wand sensitivity
-  end       Decrease mouse/keyboard/wand sensitivity
   esc       Exit

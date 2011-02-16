@@ -1,21 +1,22 @@
-#ifndef _GL_SETTING_NODE_
-#define _GL_SETTING_NODE_
+#ifndef _BACKGROUND_FADER_
+#define _BACKGROUND_FADER_
 
 #include <Core/IListener.h>
 #include <Core/EngineEvents.h>
-#include <Scene/RenderNode.h>
+#include <Renderers/IRenderer.h>
 
 using OpenEngine::Core::IListener;
 using OpenEngine::Core::ProcessEventArg;
-using OpenEngine::Scene::RenderNode;
+using OpenEngine::Renderers::IRenderer;
 
-class GLSettingsNode : public IListener<OpenEngine::Core::ProcessEventArg>, public RenderNode {
+class BackgroundFader : public IListener<OpenEngine::Core::ProcessEventArg> {
 private:
   float timeSpend,time;
   bool done;
   Timer timer;
+  IRenderer& renderer;
 public:
-  GLSettingsNode(float time) : time(time) {
+  BackgroundFader(float time, IRenderer& renderer) : time(time), renderer(renderer) {
       timeSpend = 0.0;
       done = false;
       timer.Start();
@@ -32,19 +33,15 @@ public:
       }
       else
           timeSpend += deltaTime;
-  }
-  
-void Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
+
       if (!done) {
           double pctDone = timeSpend/time;
           float pFade = 1.4 * pctDone;
           Vector<4,float> color( 0.39*pFade, 0.45*pFade, 1.0*pFade, 1.0 );
           //Vector<4,float> color( 0.6*pFade, 0.6*pFade, 0.6*pFade, 1.0 );
-          arg.renderer.SetBackgroundColor(color);
+          renderer.SetBackgroundColor(color);
       }
-      glEnable(GL_COLOR_MATERIAL);
-      VisitSubNodes(v);
-}
+  }
 };
 
-#endif
+#endif // _BACKGROUND_FADER_

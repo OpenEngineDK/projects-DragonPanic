@@ -147,32 +147,41 @@ void Dragon::Handle(InitializeEventArg arg) {
 }
 
 void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
-  /* debug lines
-  list<Line*>::iterator i;
-  for(i=bluelines.begin(); i != bluelines.end(); ++i)
-    rv->GetRenderer()->DrawLine(*(*i), Vector<3,float>(0.0,0.0,1.0) , 1.5);
-  bluelines.clear();
-  
-  for(i=redlines.begin(); i != redlines.end(); ++i)
-    rv->GetRenderer()->DrawLine(*(*i), Vector<3,float>(1.0,0.0,0.0) , 1.5);
-  redlines.clear();
-  
-  for(i=greenlines.begin(); i != greenlines.end(); ++i)
-    rv->GetRenderer()->DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
-  greenlines.clear();
-  */
-  if( enableTexture ) {
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture(GL_TEXTURE_2D, neckTexture->GetID());
-  }
-  neck->draw();
-  if( enableTexture )
-    glDisable( GL_TEXTURE_2D );
+    if (enabled) {
+        if (!enableTexture) {
+        // debug lines
+        list<Line*>::iterator i;
+        for(i=bluelines.begin(); i != bluelines.end(); ++i)
+            arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,0.0,1.0) , 1.5);
+        bluelines.clear();
+        
+        for(i=redlines.begin(); i != redlines.end(); ++i)
+            arg.renderer.DrawLine(*(*i), Vector<3,float>(1.0,0.0,0.0) , 1.5);
+        redlines.clear();
+        
+        for(i=greenlines.begin(); i != greenlines.end(); ++i)
+            arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
+        greenlines.clear();
+        } else {
+              
 
-  if( enableTexture )
-    glColor3f(1.0,1.0,1.0);
-  else
-    glColor3f( 0.2, 0.8, 0.2 );
+            GLboolean t = glIsEnabled(GL_TEXTURE_2D);
+            CHECK_FOR_GL_ERROR();
+            //if (enableTexture) {
+            glEnable( GL_TEXTURE_2D );
+            glBindTexture(GL_TEXTURE_2D, neckTexture->GetID());
+            //}
+            neck->draw();
+
+            if (enableTexture && !t)
+                glDisable( GL_TEXTURE_2D );
+
+    /*
+    if (enableTexture)
+        glColor3f(1.0, 1.0, 1.0);
+    else
+        glColor3f(0.2, 0.8, 0.2);
+    */
 
 //   glPushMatrix();
 //   //get necks position
@@ -185,7 +194,11 @@ void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
   */
   
   VisitSubNodes(v);
+        }
+
+
   //glPopMatrix();
+    }
 }
 
 void Dragon::Handle(ProcessEventArg arg) {

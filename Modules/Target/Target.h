@@ -29,6 +29,7 @@ private:
     class TargetRenderNode : public RenderNode {
         Target* target;
     public:
+        bool render;
         TargetRenderNode();
         virtual ~TargetRenderNode() {}
         void SetTarget(Target* target);
@@ -54,6 +55,7 @@ public:
     void setTarget(float x, float y, float z);
     void setTarget( Vector<3,float> v );
     void printTarget();
+    void toggleRenderState();
 };
 
 #endif

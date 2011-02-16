@@ -293,21 +293,22 @@ void Tube::draw() {
       Vector<3,float> n22 = 
 	linkX[c+1]*sin(rot2*2*PI)+linkY[c+1]*cos(rot2*2*PI);
       
-      glTexCoord2f((r)/8.0, (c)/(links-1.0));
-      glNormal3f(n11[0], n11[1], n11[2]);
-      glVertex3f(n11[0]*r1+o1[0], n11[1]*r1+o1[1], n11[2]*r1+o1[2]);
+      glTexCoord2f((r)/8.0, (c+1)/(links-1.0));
+      glNormal3f(n21[0], n21[1], n21[2]);
+      glVertex3f(n21[0]*r2+o2[0], n21[1]*r2+o2[1], n21[2]*r2+o2[2]);
+
+      glTexCoord2f((r+1)/8.0, (c+1)/(links-1.0));
+      glNormal3f(n22[0], n22[1], n22[2]);
+      glVertex3f(n22[0]*r2+o2[0], n22[1]*r2+o2[1], n22[2]*r2+o2[2]);
       
       glTexCoord2f((r+1)/8.0, (c)/(links-1.0));
       glNormal3f(n12[0], n12[1], n12[2]);
       glVertex3f(n12[0]*r1+o1[0], n12[1]*r1+o1[1], n12[2]*r1+o1[2]);
       
-      glTexCoord2f((r+1)/8.0, (c+1)/(links-1.0));
-      glNormal3f(n22[0], n22[1], n22[2]);
-      glVertex3f(n22[0]*r2+o2[0], n22[1]*r2+o2[1], n22[2]*r2+o2[2]);
+      glTexCoord2f((r)/8.0, (c)/(links-1.0));
+      glNormal3f(n11[0], n11[1], n11[2]);
+      glVertex3f(n11[0]*r1+o1[0], n11[1]*r1+o1[1], n11[2]*r1+o1[2]);
       
-      glTexCoord2f((r)/8.0, (c+1)/(links-1.0));
-      glNormal3f(n21[0], n21[1], n21[2]);
-      glVertex3f(n21[0]*r2+o2[0], n21[1]*r2+o2[1], n21[2]*r2+o2[2]);
     }
   }
   glEnd();

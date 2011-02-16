@@ -81,8 +81,8 @@
 // from project
 #include "LightFader.h"
 #include "KeyHandler.h"
-#include "TransparentcyNode.h"
-#include "GLSettingsNode.h"
+//#include "TransparentcyNode.h"
+#include "BackgroundFader.h"
 #include "GameState.h"
 #include "TimeModifier.h"
 
@@ -379,12 +379,12 @@ void SetupScene(Config& config) {
     RenderStateNode* renderStateNode = new RenderStateNode();
     renderStateNode->EnableOption(RenderStateNode::LIGHTING);
     renderStateNode->DisableOption(RenderStateNode::BACKFACE);
+    renderStateNode->EnableOption(RenderStateNode::COLOR_MATERIAL);
     config.scene = renderStateNode;
 
     float fadetime = 3000.0 * 3.5;
-    GLSettingsNode* glNode = new GLSettingsNode(fadetime);
-    config.engine.ProcessEvent().Attach(*glNode);
-    renderStateNode->AddNode(glNode);
+    BackgroundFader* bgf = new BackgroundFader(fadetime, *config.renderer);
+    config.engine.ProcessEvent().Attach(*bgf);
 
     // attach scene to soundsystem
     // config.soundsystem->SetRoot(config.scene);
@@ -449,7 +449,8 @@ void SetupScene(Config& config) {
     config.scene->AddNode(targetNode);
     config.engine.ProcessEvent().Attach(*target);
 
-    TransparencyNode* tpNode = new TransparencyNode();
+    //TransparencyNode* tpNode = new TransparencyNode();
+    BlendingNode* tpNode = new BlendingNode();
     config.scene->AddNode(tpNode);
 
     Vector<4,float> oscsColor(0.8f,0.25f,0.0f,0.7f); // lava
@@ -480,16 +481,6 @@ void SetupScene(Config& config) {
     config.gamestate = new GameState(120);
     boids->BoidSystemEvent().Attach(*config.gamestate);
 
-    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap,
-                                       *config.mouse, island, dragon, boids, *timeModifier, *config.gamestate, *config.musicplayer, *config.frame, renderStateNode);
-    //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
-
-    config.engine.ProcessEvent().Attach(*key_h);
-    config.keyboard->KeyEvent().Attach(*key_h);
-
-    config.joystick->JoystickButtonEvent().Attach(*key_h);
-    config.joystick->JoystickAxisEvent().Attach(*key_h);
-
     config.textureLoader->Load(*config.scene);
 
     // Transform the scene to use vertex arrays
@@ -506,6 +497,19 @@ void SetupScene(Config& config) {
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_NEVER);
     //config.scene->AddNode(hud->GetLayerNode());
     config.engine.ProcessEvent().Attach(*hud);
+
+    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *target, *heightMap,
+                                       *config.mouse, island, dragon, boids,
+                                       *timeModifier, *config.gamestate, *config.musicplayer,
+                                       *config.oscs, *hud, *config.frame, renderStateNode);
+    //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
+
+    config.engine.InitializeEvent().Attach(*key_h);
+    config.engine.ProcessEvent().Attach(*key_h);
+    config.keyboard->KeyEvent().Attach(*key_h);
+
+    config.joystick->JoystickButtonEvent().Attach(*key_h);
+    config.joystick->JoystickAxisEvent().Attach(*key_h);
 }
 
 void SetupDebugging(Config& config) {

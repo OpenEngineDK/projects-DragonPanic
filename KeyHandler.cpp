@@ -9,6 +9,7 @@
 
 #include "KeyHandler.h"
 
+#include "HUD/DragonHUD.h"
 #include "Modules/Boid/BoidsSystem.h"
 #include "Modules/Dragon/Dragon.h"
 #include "Modules/Island/Island.h"
@@ -28,7 +29,8 @@ using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Scene::RenderStateNode;
 
 KeyHandler::KeyHandler(FollowCamera& camera,
-                       TransformationNode& target,
+                       TransformationNode& targetTNode,
+                       Target& targetBox,
                        HeightMap& hmap,
                        IMouse& mouse,
                        Island* island,
@@ -37,18 +39,23 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        TimeModifier& timeModifier,
                        GameState& gamestate,
                        MusicPlayer& musicplayer,
+                       OscSurface& oscs,
+                       DragonHUD& hud,
                        IFrame& frame,
                        RenderStateNode* rn)
     : camera(camera)
-    , target(target)
+    , targetTNode(targetTNode)
+    , targetBox(targetBox)
     , hmap(hmap)
     , mouse(mouse)
     , timeModifier(timeModifier) 
     , gamestate(gamestate)
+    , oscs(oscs)
+    , hud(hud)
     , frame(frame)
     , rn(rn)
     , up(0),down(0),left(0),right(0)
-    , cam_up(0),cam_down(0),cam_left(0),cam_right(0)
+    , cam_in(0),cam_out(0),cam_up(0),cam_down(0),cam_left(0),cam_right(0)
     , musicplayer(musicplayer)
 {
 
@@ -56,7 +63,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   this->dragon = dragon;
   this->boidssystem = boidssystem;
 
-  camera.Follow(&target);
+  camera.Follow(&targetTNode);
 
   timeFactor = 1.0;
   gainStep = 0.1;
@@ -72,11 +79,11 @@ KeyHandler::KeyHandler(FollowCamera& camera,
 }
 
 void KeyHandler::ResetTarget() {
-    target.SetPosition(Vector<3,float>(0,0,0));
+    targetTNode.SetPosition(Vector<3,float>(0,0,0));
 }
 void KeyHandler::ResetCamera() {
     camera.SetPosition(Vector<3,float>(0,50,100));
-    camera.LookAt(0,target.GetPosition()[1],0);
+    camera.LookAt(0,targetTNode.GetPosition()[1],0);
 }
 void KeyHandler::ResetGame() {
     ResetTarget();
@@ -102,68 +109,50 @@ KeyHandler::~KeyHandler() {}
 
 // set state of keys on up/down events
 void KeyHandler::Handle(KeyboardEventArg arg) {
-    if(arg.type == EVENT_PRESS)
-      keysPressed.push_back(arg.sym);
-    else {
-      keysPressed.remove(arg.sym);
-      HandleUp(arg.sym);
-    }
+    if (arg.type == EVENT_PRESS)
+        HandleDown(arg.sym);
+    else
+        HandleUp(arg.sym);
+}
+
+void KeyHandler::Handle(OpenEngine::Core::InitializeEventArg arg) {
+    mouse.HideCursor();
 }
 
 void KeyHandler::Handle(OpenEngine::Core::ProcessEventArg arg) {
-
-    // @todo - this should be in a init handler
-    mouse.HideCursor();
-
-    if(gamestate.GetTimeLeft() <= 0) {
+    if (gamestate.GetTimeLeft() <= 0) {
         done = true;
         timeModifier.SetFactor(0.0);
     }
-
-    list<Key>::iterator key;
-    for(key=keysPressed.begin(); key != keysPressed.end(); ++key) {
-        HandleDown(*key);
-    }
-    //keysPressed.clear(); //to disable repeatition when holding down a key
-
-    // handle joystick.
     
-    float move_factor = 2.5;
-
-    if (up)
+    float move_factor = 1.0;
 	MoveForward(up*move_factor);
-    if (down)
 	MoveBack(down*move_factor);
-    if (left)
 	MoveLeft(left*move_factor);
-    if (right)
 	MoveRight(right*move_factor);
 
-    float zoom_factor = 3.0; 
+    float zoom_factor = 1.0;
+	ZoomIn(cam_in*zoom_factor);
+	ZoomOut(cam_out*zoom_factor);
 
-    if (cam_up) {
-	ZoomIn(cam_up*zoom_factor);
-    }
-    if (cam_down) {
-	ZoomOut(cam_down*zoom_factor);
-    }
-    float rot_factor = 0.1;
+    float rot_factor_vertical = 0.1;
+    RotateLeft(cam_left*rot_factor_vertical);
+	RotateRight(cam_right*rot_factor_vertical);
 
-    // Yeah, these ARE flippet...
-    if (cam_left)
-	RotateRight(cam_left*rot_factor);
-
-    if (cam_right)
-	RotateLeft(cam_right*rot_factor);
+    float rot_factor_horizontal = 1.0;
+	RotateUp(cam_up*rot_factor_horizontal);
+	RotateDown(cam_down*rot_factor_horizontal);
 
     CheckCameraCollision();
 }
 
 void KeyHandler::HandleDown(Key key) {
-
     switch (key) {
+    case KEY_0:
+        hud.toggleRenderState();
+        break;
     case KEY_1:
-      boidssystem->toggleRenderState();
+        boidssystem->toggleRenderState();
         break;
     case KEY_2:
         dragon->toggleRenderState();
@@ -172,54 +161,46 @@ void KeyHandler::HandleDown(Key key) {
         island->toggleRenderState();
         break;
     case KEY_4:
-      //OscSurface::getInstance()->enableDisable();
+        oscs.toggleRenderState();
         break;
     case KEY_5:
-      //target->enableDisable();
+        targetBox.toggleRenderState();;
         break;
     case KEY_6:
-      //ParticleSystem::getInstance()->enableDisable();
+        //ParticleSystem::getInstance()->enableDisable();
         break;
     case KEY_8:
-      boidssystem->DecNumberOfShownBoids();
+        boidssystem->DecNumberOfShownBoids();
         break;
     case KEY_9:
         boidssystem->IncNumberOfShownBoids();
         break;
     case KEY_a:
-        MoveLeft(moveChunkKeyboard);
+        left = moveChunkKeyboard;
         break;
     case KEY_d:
-        MoveRight(moveChunkKeyboard);
+        right = moveChunkKeyboard;
         break;
     case KEY_w:
-        MoveForward(moveChunkKeyboard);
+        up = moveChunkKeyboard;
         break;
     case KEY_s:
-        MoveBack(moveChunkKeyboard);
+        down = moveChunkKeyboard;
         break;
     case KEY_z:
         rn->ToggleOption(RenderStateNode::LIGHTING);
         rn->ToggleOption(RenderStateNode::WIREFRAME);
         break;
-	/*
-    case KEY_z:
-      inputgrabber->rotZ = inputgrabber->rotZ - rotChunkKeyboard;
-        break;
     case KEY_x:
-      inputgrabber->rotZ = inputgrabber->rotZ + rotChunkKeyboard;
+        rn->ToggleOption(RenderStateNode::TEXTURE);
         break;
-	*/
     case KEY_p:
-        //inputgrabber->togglePause();
-        break;
-    case KEY_f:
-        frame.ToggleOption(FRAME_FULLSCREEN);
         //inputgrabber->printLocation();
         break;
+    case KEY_f:
+        // @todo: only working on linux: frame.ToggleOption(FRAME_FULLSCREEN);
+        break;
     case KEY_SPACE:
-//      if( !intro->isDone() )
-//          intro->disable();
         TogglePauseGame();
         break;
     case KEY_r:
@@ -251,24 +232,25 @@ void KeyHandler::HandleDown(Key key) {
 
 //     case KEY_F1:
 //         //inputgrabber->rotateViewAbsolute( 30, 5, 50, 1.0 );
-//         target->setTarget(0, 0, 0);
+//         targetTNode->setTarget(0, 0, 0);
 //         break;
 //     case KEY_F2: // ved siden af hovedet
 //         //inputgrabber->rotateViewAbsolute( 25.8872, 257.27, 13.8784, 1.0 );
-//         target->setTarget( -10.5859, 5.4856, -10.0325 );
+//         targetTNode->setTarget( -10.5859, 5.4856, -10.0325 );
 //         break;
 //     case KEY_F3:
 //         //inputgrabber->rotateViewAbsolute( 16.1391, 335, 500, 1.0 );
-//         target->setTarget(-10.5859, 5.4856, -10.0325);
+//         targetTNode->setTarget(-10.5859, 5.4856, -10.0325);
 //         break;
 //     case KEY_F4: // inde i munden
 //         //inputgrabber->rotateViewAbsolute( 54.4593, 266.533, 7.75, 1.0 );
-//         target->setTarget( -2.77879, 3.63685, 0.168352);
+//         targetTNode->setTarget( -2.77879, 3.63685, 0.168352);
 //         break;
 //     case KEY_F5: //Mellem bjergene
 //         //inputgrabber->rotateViewAbsolute( 340, 245.064, 68.548, 1.0 );
-//         target->setTarget( 39.9721, 6.39716, -27.3046 );
+//         targetTNode->setTarget( 39.9721, 6.39716, -27.3046 );
 //         break;
+
 //     case KEY_F9:
 //         //inputgrabber->scaleGlobal( -0.05 );
 //         break;
@@ -289,29 +271,24 @@ void KeyHandler::HandleDown(Key key) {
          timeModifier.SetFactor(timeFactor);
 	 logger.info << "time factor: " << timeFactor << logger.end;
          break;
+
     case KEY_PAGEUP:
-        ZoomIn(moveChunkKeyboard);
+        cam_in = moveChunkKeyboard;
         break;
     case KEY_PAGEDOWN:
-        ZoomOut(moveChunkKeyboard);
-        break;
-    case KEY_HOME:
-        //inputgrabber->incMultiplier();
-        break;
-    case KEY_END:
-        //inputgrabber->decMultiplier();
+        cam_out = moveChunkKeyboard;
         break;
     case KEY_UP:
-        RotateUp(moveChunkKeyboard);
+        cam_up = moveChunkKeyboard;
         break;
     case KEY_DOWN:
-        RotateDown(moveChunkKeyboard);
+        cam_down = moveChunkKeyboard;
         break;
     case KEY_LEFT:
-        RotateLeft(rotChunkKeyboard);
+        cam_left = rotChunkKeyboard;
         break;
     case KEY_RIGHT:
-        RotateRight(rotChunkKeyboard);
+        cam_right = rotChunkKeyboard;
         break;
     default:
         break;
@@ -319,53 +296,51 @@ void KeyHandler::HandleDown(Key key) {
 }
 
 void KeyHandler::MoveForward(float d) {
-    target.Move(0, 0, -d);
+    targetTNode.Move(0, 0, -d);
 }
 void KeyHandler::MoveBack(float d) {
-    target.Move(0, 0, d);
+    targetTNode.Move(0, 0, d);
 }
 void KeyHandler::MoveLeft(float d) {
-    target.Move(-d, 0, 0);
+    targetTNode.Move(-d, 0, 0);
 }
 void KeyHandler::MoveRight(float d) {
-    target.Move(d, 0, 0);
+    targetTNode.Move(d, 0, 0);
 }
 void KeyHandler::RotateUp(float d) {
     // check that the camera does not roll over the top
     if (0.95f < camera.GetDirection().RotateVector(Vector<3,float>(0,0,1))[1]) return;
     camera.Move(0, 0, d);
-    camera.LookAt(0,target.GetPosition()[1],0);    
+    camera.LookAt(0,targetTNode.GetPosition()[1],0);    
 }
 void KeyHandler::RotateDown(float d) {
     Vector<3,float> p = camera.GetPosition();
     float h = hmap.HeightAt(p)[1];
     if (h + 10 > p[1]) return;
     camera.Move(0, 0, -d);
-    camera.LookAt(0,target.GetPosition()[1],0);
+    camera.LookAt(0,targetTNode.GetPosition()[1],0);
 }
 void KeyHandler::RotateRight(float d) {
-    target.Rotate(0, -d, 0);
+    targetTNode.Rotate(0, d, 0);
 }
 void KeyHandler::RotateLeft(float d) {
-    target.Rotate(0, d, 0);
+    targetTNode.Rotate(0, -d, 0);
 }
 void KeyHandler::ZoomIn(float d) {
-    Vector<3,float> v(target.GetPosition() - camera.GetPosition());
+    Vector<3,float> v(targetTNode.GetPosition() - camera.GetPosition());
     if (v*v < 1000) return;
     camera.Move(d,0,0);
 }
 void KeyHandler::ZoomOut(float d) {
-    Vector<3,float> v(target.GetPosition() - camera.GetPosition());
+    Vector<3,float> v(targetTNode.GetPosition() - camera.GetPosition());
     if (v*v > 10000) return;
     camera.Move(-d,0,0);
 }
 
-
-
 void KeyHandler::CheckCameraCollision() {
     // if the camera is under the height map move it up
     Vector<3,float> t, c, p, r;
-    t = target.GetPosition();
+    t = targetTNode.GetPosition();
     p = camera.GetPosition();
     float h = hmap.HeightAt(p)[1] + 10;
     if (h > p[1]) {
@@ -381,6 +356,36 @@ void KeyHandler::HandleUp(Key key) {
         break;
     case KEY_q:
         dragon->ShootFireball();
+        break;
+    case KEY_a:
+        left = 0.0f;
+        break;
+    case KEY_d:
+        right = 0.0f;
+        break;
+    case KEY_w:
+        up = 0.0f;
+        break;
+    case KEY_s:
+        down = 0.0f;
+        break;
+    case KEY_PAGEUP:
+        cam_in = 0.0;
+        break;
+    case KEY_PAGEDOWN:
+        cam_out = 0.0;
+        break;
+    case KEY_UP:
+        cam_up = 0.0;
+        break;
+    case KEY_DOWN:
+        cam_down = 0.0;
+        break;
+    case KEY_LEFT:
+        cam_left = 0.0;
+        break;
+    case KEY_RIGHT:
+        cam_right = 0.0;
         break;
     default:
         break;
@@ -452,14 +457,25 @@ void KeyHandler::Handle(JoystickAxisEventArg arg) {
     if (right < thres1) right = 0.0;
 
     
-    cam_up = (-arg.state.axisState[3])/max;
-    if (cam_up < thres2) cam_up = 0.0;
-    cam_down = (arg.state.axisState[3])/max;
-    if (cam_down < thres2) cam_down = 0.0;
+    cam_in = (-arg.state.axisState[3])/max;
+    if (cam_in < thres2) cam_in = 0.0;
+    cam_out = (arg.state.axisState[3])/max;
+    if (cam_out < thres2) cam_out = 0.0;
     
     cam_left = (-arg.state.axisState[2])/max;
     if (cam_left < thres2) cam_left = 0.0;
     cam_right = (arg.state.axisState[2])/max;
     if (cam_right < thres2) cam_right = 0.0;
 
+    float move_factor = 2.5;
+    left *= move_factor;
+    right *= move_factor;
+    up *= move_factor;
+    down *= move_factor;
+    float zoom_factor = 3.0;
+    cam_in *= zoom_factor;
+    cam_out *= zoom_factor;
+    float rot_factor = 1.0;
+    cam_left *= rot_factor;
+    cam_right *= rot_factor;
 }

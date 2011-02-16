@@ -34,7 +34,9 @@ class Dragon;
 class InputGrabber;
 class Intro;
 class Island;
+class OscSurface;
 class Target;
+class DragonHUD;
 namespace OpenEngine {
     namespace Devices {
         class IKeyboard;
@@ -60,7 +62,8 @@ using namespace OpenEngine::Sound;
 
 using std::list;
 
-class KeyHandler : public IListener<OpenEngine::Core::ProcessEventArg>,
+class KeyHandler : public IListener<OpenEngine::Core::InitializeEventArg>,
+           public IListener<OpenEngine::Core::ProcessEventArg>,
 		   public IListener<KeyboardEventArg>,
 		   public IListener<JoystickButtonEventArg>,
 		   public IListener<JoystickAxisEventArg> {
@@ -70,11 +73,14 @@ private:
     Dragon* dragon;
     BoidsSystem* boidssystem;
     FollowCamera& camera;
-    TransformationNode& target;
+    TransformationNode& targetTNode;
+    Target& targetBox;
     HeightMap& hmap;
     IMouse& mouse;
     TimeModifier& timeModifier;
     GameState& gamestate;
+    OscSurface& oscs;
+    DragonHUD& hud;
     IFrame& frame;
     RenderStateNode *rn;
 
@@ -89,7 +95,7 @@ private:
     bool warping;
 
     float up,down,left,right;
-    float cam_up,cam_down,cam_left,cam_right;
+    float cam_in,cam_out,cam_up,cam_down,cam_left,cam_right;
 
     MusicPlayer& musicplayer;
 
@@ -97,7 +103,8 @@ private:
 
 public:
     KeyHandler(FollowCamera& camera,
-               TransformationNode& target,
+               TransformationNode& targetTNode,
+               Target& targetBox,
                HeightMap& hmap,
                IMouse& mouse,
                Island* island,
@@ -106,6 +113,8 @@ public:
                TimeModifier& timeModifer,
                GameState& gamestate,
                MusicPlayer& musicplayer,
+               OscSurface& oscs,
+               DragonHUD& hud,
                IFrame& frame,
                RenderStateNode* rn);
     ~KeyHandler();
@@ -114,6 +123,7 @@ public:
     void HandleUp(Key key);
     void HandleDown(Key key);
 
+    void Handle(OpenEngine::Core::InitializeEventArg arg);
     void Handle(OpenEngine::Core::ProcessEventArg arg);
     void Handle(JoystickAxisEventArg arg);
     void Handle(JoystickButtonEventArg arg);

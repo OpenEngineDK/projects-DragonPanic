@@ -61,6 +61,8 @@ public:
     float HeightAt(float x, float z);
     Vector<3,float> HeightAt(Vector<3,float> p);
     Vector<3,float> NormalAt(Vector<3,float> p);
+    Vector<3,float> NormalAt(float x, float z);
+    float SlopeAt(float x, float z);
 };
 
 #endif

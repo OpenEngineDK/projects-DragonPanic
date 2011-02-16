@@ -43,7 +43,7 @@ DragonHUD::DragonHUD(IFrame& frame, GameState& gamestate, HUD& hud, TextureLoade
     textTool->SetFontName("Monaco");
     textTool->SetFontSize(textsize);
     textTool->Shadows(true);
-    textTool->SetColor(Vector<4,float>(0.5,0,0,0.9));
+    textTool->SetColor(Vector<4,float>(0.5, 0 ,0 ,0.9));
 
     // initialize the time counter
     timeTexture = CairoResource::Create(surfWidth,surfHeight);
@@ -110,4 +110,6 @@ void DragonHUD::Handle(OpenEngine::Core::ProcessEventArg arg) {
     }
 }
 
-
+void DragonHUD::toggleRenderState() {
+    hud.SetState( !hud.GetState() );
+}

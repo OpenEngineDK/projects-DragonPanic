@@ -18,11 +18,13 @@ namespace OpenEngine {
     }
     namespace Scene {
       class TransformationNode;
+      class RenderStateNode;
     }
 }
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
+using OpenEngine::Scene::RenderStateNode;
 using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Scene::ISceneNodeVisitor;
@@ -32,6 +34,7 @@ class Island : public RenderNode {
 private:
     HeightMap* heightMap;
     TransformationNode* trees;
+    RenderStateNode* rsn;
 
     bool enabled; //original inherited from MTree - Module
     bool bRender; /* Polygon Flag Set To TRUE By Default */

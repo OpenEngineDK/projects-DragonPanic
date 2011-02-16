@@ -47,6 +47,7 @@ public:
     virtual ~DragonHUD();
 
     void Handle(OpenEngine::Core::ProcessEventArg arg);
+    void toggleRenderState();
 };
 
 

@@ -52,6 +52,7 @@ private:
 
   Timer timer;
   Vector<4,float> color;
+  bool render;
 
   inline float GaussPeak(float my_x, float my_y,
 			 float sigma_x, float sigma_y,
@@ -66,7 +67,8 @@ public:
   void Handle(OpenEngine::Core::ProcessEventArg arg);
   void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
 
-  void createRipple(float x, float z, float width, float height);  
+  void createRipple(float x, float z, float width, float height);
+  void toggleRenderState();
 };
 
 #endif
