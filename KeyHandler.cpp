@@ -198,7 +198,8 @@ void KeyHandler::HandleDown(Key key) {
         //inputgrabber->printLocation();
         break;
     case KEY_f:
-        // @todo: only working on linux: frame.ToggleOption(FRAME_FULLSCREEN);
+        // @todo: only working on linux
+        //frame.ToggleOption(FRAME_FULLSCREEN);
         break;
     case KEY_SPACE:
         TogglePauseGame();

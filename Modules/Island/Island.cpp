@@ -97,10 +97,10 @@ void Island::toggleRenderState(){
         enabled = false;
         break;
     default: //render all, reset variables
-        rsn->InheritOption(RenderStateNode::WIREFRAME);
+        rsn->DisableOption(RenderStateNode::WIREFRAME);
         enabled = true;
         renderTrees = true;
-        rsn->InheritOption(RenderStateNode::TEXTURE);
+        rsn->EnableOption(RenderStateNode::TEXTURE);
         break;
     }
 }
