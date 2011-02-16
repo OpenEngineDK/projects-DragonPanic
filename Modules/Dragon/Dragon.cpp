@@ -149,19 +149,19 @@ void Dragon::Handle(InitializeEventArg arg) {
 void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     if (enabled) {
         if (!enableTexture) {
-        // debug lines
-        list<Line*>::iterator i;
-        for(i=bluelines.begin(); i != bluelines.end(); ++i)
-            arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,0.0,1.0) , 1.5);
-        bluelines.clear();
-        
-        for(i=redlines.begin(); i != redlines.end(); ++i)
-            arg.renderer.DrawLine(*(*i), Vector<3,float>(1.0,0.0,0.0) , 1.5);
-        redlines.clear();
-        
-        for(i=greenlines.begin(); i != greenlines.end(); ++i)
-            arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
-        greenlines.clear();
+            // debug lines
+            list<Line*>::iterator i;
+            for(i=bluelines.begin(); i != bluelines.end(); ++i)
+                arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,0.0,1.0) , 1.5);
+            bluelines.clear();
+            
+            for(i=redlines.begin(); i != redlines.end(); ++i)
+                arg.renderer.DrawLine(*(*i), Vector<3,float>(1.0,0.0,0.0) , 1.5);
+            redlines.clear();
+            
+            for(i=greenlines.begin(); i != greenlines.end(); ++i)
+                arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
+            greenlines.clear();
         } else {
               
 
@@ -210,6 +210,10 @@ void Dragon::Handle(ProcessEventArg arg) {
 
     float unitsFromTarget = 12;
     //    float moveNeckBack = 5.0;
+
+    greenlines.clear();
+    bluelines.clear();
+    redlines.clear();
 
     // hack to make the neck move back when charging fireball
     if (chargingFireball) {
@@ -298,8 +302,8 @@ void Dragon::Handle(ProcessEventArg arg) {
 		 Vector<3,float>(0.1,1,0),Vector<3,float>(1,0,0),
 		 fireSource,newHeadDir,fireSource-startP,false);
     
-	bluelines.push_back( new Line( fireSource,( fireSource + newHeadDir )*2.0 ) );
-	bluelines.push_back( new Line( fireSource,( fireSource + (fireSource-startP) )*2.0 ) );
+	//bluelines.push_back( new Line( fireSource,( fireSource + newHeadDir )*2.0 ) );
+	//bluelines.push_back( new Line( fireSource,( fireSource + (fireSource-startP) )*2.0 ) );
 	
     for(int i=0; i< Tube::links; i++) {
       redlines.push_back( new Line( neck->getLinkPosition(i),( neck->getLinkPosition(i)+neck->getLinkX(i)*5 ) ) );
