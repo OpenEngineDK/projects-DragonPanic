@@ -91,6 +91,7 @@ void Island::toggleRenderState(){
         rsn->DisableOption(RenderStateNode::TEXTURE);
         break;
     case 2: // wireframe
+        rsn->EnableOption(RenderStateNode::TEXTURE);
         rsn->EnableOption(RenderStateNode::WIREFRAME);
         break;
     case 3: //all off

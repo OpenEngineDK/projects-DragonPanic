@@ -342,8 +342,8 @@ void SetupRendering(Config& config) {
     config.textureLoader = new Renderers::TextureLoader(*config.renderer);
     config.renderer->PreProcessEvent().Attach(*config.textureLoader);
 
-    DisplayListTransformer* dlt = new DisplayListTransformer(rv);
-    config.renderer->InitializeEvent().Attach(*dlt);
+    //DisplayListTransformer* dlt = new DisplayListTransformer(rv);
+    //config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
         .Attach( *(new Renderers::OpenGL::LightRenderer()) );

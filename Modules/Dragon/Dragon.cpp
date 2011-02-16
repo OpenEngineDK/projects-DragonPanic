@@ -22,6 +22,7 @@
 #include <Renderers/TextureLoader.h>
 #include <Renderers/IRenderingView.h>
 #include <Scene/TransformationNode.h>
+#include <Scene/RenderStateNode.h>
 #include <Math/Math.h>
 #include <Geometry/FaceSet.h>
 #include <Geometry/Face.h>
@@ -49,9 +50,9 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
 
     jawPos = 0.0f;
     enableTexture = enabled = true;
-    numberOfRenderStates = 3;
+    numberOfRenderStates = 4;
     renderState = numberOfRenderStates-1;
-    usingBreathWeapon = chargingFireball = false;
+    enableDebug = usingBreathWeapon = chargingFireball = false;
     breathweapon->SetActive(false);
 
     //@todo does this make a difference?
@@ -66,7 +67,9 @@ Dragon::Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, Target* target,
 
     
     headNode = new TransformationNode();    
-    this->AddNode(headNode);
+    rsn = new RenderStateNode();
+    this->AddNode(rsn);
+    rsn->AddNode(headNode);
 
     TransformationNode* craniumNode = new TransformationNode();
     float scale = 0.2; //cpvc 5.0f;
@@ -148,7 +151,7 @@ void Dragon::Handle(InitializeEventArg arg) {
 
 void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
     if (enabled) {
-        if (!enableTexture) {
+        if (enableDebug) {
             // debug lines
             list<Line*>::iterator i;
             for(i=bluelines.begin(); i != bluelines.end(); ++i)
@@ -163,41 +166,27 @@ void Dragon::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
                 arg.renderer.DrawLine(*(*i), Vector<3,float>(0.0,1.0,0.0) , 1.5);
             greenlines.clear();
         } else {
-              
-
             GLboolean t = glIsEnabled(GL_TEXTURE_2D);
             CHECK_FOR_GL_ERROR();
-            //if (enableTexture) {
-            glEnable( GL_TEXTURE_2D );
-            glBindTexture(GL_TEXTURE_2D, neckTexture->GetID());
-            //}
+            if (enableTexture) {
+                glEnable( GL_TEXTURE_2D );
+                glBindTexture(GL_TEXTURE_2D, neckTexture->GetID());
+            } else
+                glDisable( GL_TEXTURE_2D );
             neck->draw();
-
             if (enableTexture && !t)
                 glDisable( GL_TEXTURE_2D );
 
-    /*
-    if (enableTexture)
-        glColor3f(1.0, 1.0, 1.0);
-    else
-        glColor3f(0.2, 0.8, 0.2);
-    */
-
-//   glPushMatrix();
-//   //get necks position
-//   float* headTransform = neck->getLinkMatrix(Tube::links-1);
-//   glMultMatrixf(headTransform);
-  /* @todo
-    float* headTransform = neck->getLinkMatrix(Tube::links-1);
-    Matrix<4,4,float> m = Matrix<4,4,float>(headTransform);
-    headNode->SetMatrix(m);
-  */
-  
-  VisitSubNodes(v);
+            // render head green if on textures
+            if (enableTexture) {
+                //glColor3f(1.0, 1.0, 1.0);
+                rsn->EnableOption(RenderStateNode::TEXTURE);
+            } else {
+                //glColor3f(0.2, 0.8, 0.2);
+                rsn->DisableOption(RenderStateNode::TEXTURE);
+            }
+            VisitSubNodes(v);
         }
-
-
-  //glPopMatrix();
     }
 }
 
@@ -369,12 +358,16 @@ void Dragon::toggleRenderState(){
     case 0: //disable texture
         enableTexture = false;
         break;
-    case 1: //disable dragon
+    case 1: //debug geometry
+        enableDebug = true;
+        break;
+    case 2: //disable dragon
         enabled = false;
         break;
     default: //render all, reset variables
         enabled = true;
         enableTexture = true;
+        enableDebug = false;
         break;
     }
 }

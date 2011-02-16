@@ -259,8 +259,9 @@ void Tube::update(Vector<3,float> pointA, Vector<3,float> dirA,
 }
 
 void Tube::draw() {
-  // Draw fins
-  glColor3f( 0.2, 0.8, 0.2 );
+    // Draw fins
+    glColor3f( 1.0, 1.0, 1.0 );
+    //glColor3f( 0.2, 0.8, 0.2 );
   for (int c=2; c<links; c+=3) {
     glPushMatrix();
     glMultMatrixf(linkM[c]);

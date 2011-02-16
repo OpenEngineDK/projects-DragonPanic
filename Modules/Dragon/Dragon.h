@@ -30,6 +30,7 @@ namespace OpenEngine {
     }
     namespace Scene {
         class TransformationNode;
+        class RenderStateNode;
     }
     namespace Geometry {
       class Line;
@@ -44,6 +45,7 @@ using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::RenderNode;
+using OpenEngine::Scene::RenderStateNode;
 using OpenEngine::Renderers::RenderingEventArg;
 using OpenEngine::Renderers::TextureLoader;
 using OpenEngine::Scene::TransformationNode;
@@ -58,8 +60,6 @@ using namespace OpenEngine::Resources;
 class Dragon : public IListener<OpenEngine::Core::InitializeEventArg>,
   public IListener<OpenEngine::Core::ProcessEventArg>, public RenderNode {
 public:
-    bool enabled;
-
     Dragon(HeightMap* heightMap, BoidsSystem& boidssystem, 
            Target* target, 
            TextureLoader& textureLoader, 
@@ -83,6 +83,7 @@ private:
     HeightMap* heightMap;
     Target* target;
     
+    RenderStateNode* rsn;
     TransformationNode* headNode;
     TransformationNode* jawAngleNode;
 
@@ -103,7 +104,7 @@ private:
     // Render flags
     unsigned int flags;
 
-    bool enableTexture;
+    bool enabled, enableDebug, enableTexture;
     int renderState, numberOfRenderStates;
     bool usingBreathWeapon, chargingFireball;
     float fireballCharge;
