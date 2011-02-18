@@ -26,7 +26,7 @@ using OpenEngine::Math::PI;
 
 Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
     bRender = enabled = renderTrees = enableTexture = true;
-    numberOfRenderStates = 5;
+    numberOfRenderStates = 4;
     renderState = numberOfRenderStates-1;
 
     rsn = new RenderStateNode();
@@ -70,10 +70,10 @@ Island::~Island() {
 }
 
 void Island::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {
+    // Draw trees
+    if (renderTrees)
+        trees->Accept(v);
     if (enabled) {
-        // Draw trees
-        if (renderTrees)
-            trees->Accept(v);
         VisitSubNodes(v);
     }
 }
@@ -84,24 +84,24 @@ void Island::toggleRenderState(){
 
     enabled = true;
     switch (renderState) {
-    case 0: //no trees
-        renderTrees = false;
-        break;
-    case 1: //disable texture
+    case 0: //disable texture
         rsn->DisableOption(RenderStateNode::TEXTURE);
         break;
-    case 2: // wireframe
+    case 1: // wireframe
         rsn->EnableOption(RenderStateNode::TEXTURE);
         rsn->EnableOption(RenderStateNode::WIREFRAME);
         break;
-    case 3: //all off
+    case 2: //all off
         enabled = false;
         break;
     default: //render all, reset variables
         rsn->DisableOption(RenderStateNode::WIREFRAME);
         enabled = true;
-        renderTrees = true;
         rsn->EnableOption(RenderStateNode::TEXTURE);
         break;
     }
+}
+
+void Island::toggleRenderStateOnTrees(){
+    renderTrees = ! renderTrees;
 }

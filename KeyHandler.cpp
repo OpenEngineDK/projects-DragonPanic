@@ -22,11 +22,18 @@
 #include <Sound/MusicPlayer.h>
 #include <Scene/RenderStateNode.h>
 
+#include <Display/Camera.h>
 #include <Display/IFrame.h>
+#include <Display/ViewingVolume.h>
+
+#include <Utils/MoveHandler.h>
 
 using OpenEngine::Math::Vector;
 using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Scene::RenderStateNode;
+using OpenEngine::Display::Camera;
+using OpenEngine::Display::ViewingVolume;
+using OpenEngine::Utils::MoveHandler;
 
 KeyHandler::KeyHandler(FollowCamera& camera,
                        TransformationNode& targetTNode,
@@ -41,6 +48,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
                        MusicPlayer& musicplayer,
                        OscSurface& oscs,
                        DragonHUD& hud,
+                       IRenderCanvas& canvas,
                        IFrame& frame,
                        RenderStateNode* rn)
     : camera(camera)
@@ -52,6 +60,7 @@ KeyHandler::KeyHandler(FollowCamera& camera,
     , gamestate(gamestate)
     , oscs(oscs)
     , hud(hud)
+    , canvas(canvas)
     , frame(frame)
     , rn(rn)
     , up(0),down(0),left(0),right(0)
@@ -64,6 +73,10 @@ KeyHandler::KeyHandler(FollowCamera& camera,
   this->boidssystem = boidssystem;
 
   camera.Follow(&targetTNode);
+
+  useGameCamera = true;
+  freeCamera = new Camera(*(new ViewingVolume()));
+  freeCamHandler = new MoveHandler(*freeCamera, mouse);
 
   timeFactor = 1.0;
   gainStep = 0.1;
@@ -110,13 +123,17 @@ KeyHandler::~KeyHandler() {}
 // set state of keys on up/down events
 void KeyHandler::Handle(KeyboardEventArg arg) {
     if (arg.type == EVENT_PRESS)
-        HandleDown(arg.sym);
+        HandleDown(arg);
     else
-        HandleUp(arg.sym);
+        HandleUp(arg);
+
+    if (!useGameCamera)
+        freeCamHandler->Handle(arg);
 }
 
 void KeyHandler::Handle(OpenEngine::Core::InitializeEventArg arg) {
     mouse.HideCursor();
+    freeCamHandler->Handle(arg);
 }
 
 void KeyHandler::Handle(OpenEngine::Core::ProcessEventArg arg) {
@@ -144,10 +161,13 @@ void KeyHandler::Handle(OpenEngine::Core::ProcessEventArg arg) {
 	RotateDown(cam_down*rot_factor_horizontal);
 
     CheckCameraCollision();
+    
+    if (!useGameCamera)
+       freeCamHandler->Handle(arg);
 }
 
-void KeyHandler::HandleDown(Key key) {
-    switch (key) {
+void KeyHandler::HandleDown(KeyboardEventArg arg) {
+    switch (arg.sym) {
     case KEY_0:
         hud.toggleRenderState();
         break;
@@ -167,6 +187,9 @@ void KeyHandler::HandleDown(Key key) {
         targetBox.toggleRenderState();;
         break;
     case KEY_6:
+        island->toggleRenderStateOnTrees();
+        break;
+    case KEY_7:
         //ParticleSystem::getInstance()->enableDisable();
         break;
     case KEY_8:
@@ -176,16 +199,20 @@ void KeyHandler::HandleDown(Key key) {
         boidssystem->IncNumberOfShownBoids();
         break;
     case KEY_a:
-        left = moveChunkKeyboard;
+        if (useGameCamera)
+            left = moveChunkKeyboard;
         break;
     case KEY_d:
-        right = moveChunkKeyboard;
+        if (useGameCamera)
+            right = moveChunkKeyboard;
         break;
     case KEY_w:
-        up = moveChunkKeyboard;
+        if (useGameCamera)
+            up = moveChunkKeyboard;
         break;
     case KEY_s:
-        down = moveChunkKeyboard;
+        if (useGameCamera)
+            down = moveChunkKeyboard;
         break;
     case KEY_z:
         rn->ToggleOption(RenderStateNode::LIGHTING);
@@ -272,24 +299,38 @@ void KeyHandler::HandleDown(Key key) {
          timeModifier.SetFactor(timeFactor);
 	 logger.info << "time factor: " << timeFactor << logger.end;
          break;
+    case KEY_c: // switch camera
+        useGameCamera = !useGameCamera;
+        if (useGameCamera) {
+            canvas.SetViewingVolume(&camera);
+        } else {
+            canvas.SetViewingVolume(freeCamera);
+        }
+        break;
 
     case KEY_PAGEUP:
-        cam_in = moveChunkKeyboard;
+        if (useGameCamera)
+            cam_in = moveChunkKeyboard;
         break;
     case KEY_PAGEDOWN:
-        cam_out = moveChunkKeyboard;
+        if (useGameCamera)
+            cam_out = moveChunkKeyboard;
         break;
     case KEY_UP:
-        cam_up = moveChunkKeyboard;
+        if (useGameCamera)
+            cam_up = moveChunkKeyboard;
         break;
     case KEY_DOWN:
-        cam_down = moveChunkKeyboard;
+        if (useGameCamera)
+            cam_down = moveChunkKeyboard;
         break;
     case KEY_LEFT:
-        cam_left = rotChunkKeyboard;
+        if (useGameCamera)
+            cam_left = rotChunkKeyboard;
         break;
     case KEY_RIGHT:
-        cam_right = rotChunkKeyboard;
+        if (useGameCamera)
+            cam_right = rotChunkKeyboard;
         break;
     default:
         break;
@@ -350,8 +391,8 @@ void KeyHandler::CheckCameraCollision() {
     }
 }
 
-void KeyHandler::HandleUp(Key key) {
-    switch (key) {
+void KeyHandler::HandleUp(KeyboardEventArg arg) {
+    switch (arg.sym) {
     case KEY_e:
         dragon->useBreathWeapon( false );
         break;
@@ -396,13 +437,13 @@ void KeyHandler::HandleUp(Key key) {
 void KeyHandler::Handle(JoystickButtonEventArg arg) {
     switch (arg.button) {
     case JBUTTON_TWO:
-	dragon->useBreathWeapon( arg.type == JoystickButtonEventArg::PRESS);
-	break;
+        dragon->useBreathWeapon( arg.type == JoystickButtonEventArg::PRESS);
+        break;
     case JBUTTON_THREE:
         if ( arg.type == JoystickButtonEventArg::PRESS )
             dragon->ChargeFireball();
         else dragon->ShootFireball();
-	break;
+        break;
     case JBUTTON_NINE:
         if(arg.type == JoystickButtonEventArg::PRESS)
             ResetGame();
@@ -418,65 +459,68 @@ void KeyHandler::Handle(JoystickButtonEventArg arg) {
         boidssystem->IncAlignment();
         break;
     case JBUTTON_SEVEN:
-	if (arg.type == JoystickButtonEventArg::PRESS) {
-        if (done) return;
-	    timeFactor -= 0.1;
-	    if (timeFactor < 0.0) timeFactor = 0.0;
-	    timeModifier.SetFactor(timeFactor);
-	    logger.info << "time factor: " << timeFactor << logger.end;
-	    break;
-	}
+        if (arg.type == JoystickButtonEventArg::PRESS) {
+            if (done) return;
+            timeFactor -= 0.1;
+            if (timeFactor < 0.0) timeFactor = 0.0;
+            timeModifier.SetFactor(timeFactor);
+            logger.info << "time factor: " << timeFactor << logger.end;
+            break;
+        }
     case JBUTTON_EIGHT:
-	if (arg.type == JoystickButtonEventArg::PRESS) {
-        if (done) return;
-	    timeFactor += 0.1;
-	    if (timeFactor > 100.0) timeFactor = 100.0;
-	    timeModifier.SetFactor(timeFactor);
-	    logger.info << "time factor: " << timeFactor << logger.end;
-	    break;
-	}
+        if (arg.type == JoystickButtonEventArg::PRESS) {
+            if (done) return;
+            timeFactor += 0.1;
+            if (timeFactor > 100.0) timeFactor = 100.0;
+            timeModifier.SetFactor(timeFactor);
+            logger.info << "time factor: " << timeFactor << logger.end;
+            break;
+        }
 
     default:
-	break;
+        break;
     }
 }
 
 void KeyHandler::Handle(JoystickAxisEventArg arg) {
+    if (useGameCamera) {
+        float max = 1 << 15;
+        float thres1 = 0.1;
+        float thres2 = 0.15;
 
-    float max = 1 << 15;
-    float thres1 = 0.1;
-    float thres2 = 0.15;
+        up = (-arg.state.axisState[1])/max;
+        if (up < thres1) up = 0.0;
+        down = (arg.state.axisState[1])/max;
+        if (down < thres1) down = 0.0;
 
-    up = (-arg.state.axisState[1])/max;
-    if (up < thres1) up = 0.0;
-    down = (arg.state.axisState[1])/max;
-    if (down < thres1) down = 0.0;
-
-    left = (-arg.state.axisState[0])/max;
-    if (left < thres1) left = 0.0;
-    right = (arg.state.axisState[0])/max;
-    if (right < thres1) right = 0.0;
+        left = (-arg.state.axisState[0])/max;
+        if (left < thres1) left = 0.0;
+        right = (arg.state.axisState[0])/max;
+        if (right < thres1) right = 0.0;
 
     
-    cam_in = (-arg.state.axisState[3])/max;
-    if (cam_in < thres2) cam_in = 0.0;
-    cam_out = (arg.state.axisState[3])/max;
-    if (cam_out < thres2) cam_out = 0.0;
+        cam_in = (-arg.state.axisState[3])/max;
+        if (cam_in < thres2) cam_in = 0.0;
+        cam_out = (arg.state.axisState[3])/max;
+        if (cam_out < thres2) cam_out = 0.0;
     
-    cam_left = (-arg.state.axisState[2])/max;
-    if (cam_left < thres2) cam_left = 0.0;
-    cam_right = (arg.state.axisState[2])/max;
-    if (cam_right < thres2) cam_right = 0.0;
+        cam_left = (-arg.state.axisState[2])/max;
+        if (cam_left < thres2) cam_left = 0.0;
+        cam_right = (arg.state.axisState[2])/max;
+        if (cam_right < thres2) cam_right = 0.0;
 
-    float move_factor = 2.5;
-    left *= move_factor;
-    right *= move_factor;
-    up *= move_factor;
-    down *= move_factor;
-    float zoom_factor = 3.0;
-    cam_in *= zoom_factor;
-    cam_out *= zoom_factor;
-    float rot_factor = 1.0;
-    cam_left *= rot_factor;
-    cam_right *= rot_factor;
+        float move_factor = 2.5;
+        left *= move_factor;
+        right *= move_factor;
+        up *= move_factor;
+        down *= move_factor;
+        float zoom_factor = 3.0;
+        cam_in *= zoom_factor;
+        cam_out *= zoom_factor;
+        float rot_factor = 1.0;
+        cam_left *= rot_factor;
+        cam_right *= rot_factor;
+    } else {
+        freeCamHandler->Handle(arg);
+    }
 }

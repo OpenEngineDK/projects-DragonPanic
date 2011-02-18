@@ -51,6 +51,7 @@ public:
     virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
 
     void toggleRenderState();
+    void toggleRenderStateOnTrees();
 };
 
 #endif

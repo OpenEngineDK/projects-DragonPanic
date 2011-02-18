@@ -269,7 +269,6 @@ void SetupSound(Config& config) {
 void SetupResources(Config& config) {
     // set the resources directory
     // @todo we should check that this path exists
-    // set the resources directory
     string resources = "projects/DragonPanic/data/";
     DirectoryManager::AppendPath(resources);
 
@@ -296,7 +295,6 @@ void SetupDisplay(Config& config) {
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
     //config.frustum       = new Frustum(*config.camera, 20, 3000);
-
 }
 
 void SetupDevices(Config& config) {
@@ -321,8 +319,7 @@ void SetupDevices(Config& config) {
 }
 
 void SetupRendering(Config& config) {
-    if (//config.viewport == NULL ||
-        config.frame == NULL ||
+    if (config.frame == NULL ||
         config.renderer != NULL ||
         config.camera == NULL ||
         config.soundsystem == NULL )
@@ -332,7 +329,7 @@ void SetupRendering(Config& config) {
     config.renderer = new Renderer();
 
     // Setup a rendering view
-    IRenderingView* rv = new RenderingView(/**config.viewport*/);
+    IRenderingView* rv = new RenderingView();
     config.renderer->ProcessEvent().Attach(*rv);
 
     ParticleRenderer<SimpleEmitter::TYPE>* pr = new ParticleRenderer<SimpleEmitter::TYPE>();
@@ -342,24 +339,21 @@ void SetupRendering(Config& config) {
     config.textureLoader = new Renderers::TextureLoader(*config.renderer);
     config.renderer->PreProcessEvent().Attach(*config.textureLoader);
 
+    // removed to be able to turn off textures
     //DisplayListTransformer* dlt = new DisplayListTransformer(rv);
     //config.renderer->InitializeEvent().Attach(*dlt);
 
     config.renderer->PreProcessEvent()
         .Attach( *(new Renderers::OpenGL::LightRenderer()) );
 
-
     // Pick a stereo mode or no stereo at all
     config.canvas = new RenderCanvas(new Display::OpenGL::TextureCopy());
-
     //config.canvas = new SplitStereoCanvas();
     //config.canvas = new ColorStereoCanvas();
-
     config.canvas->SetViewingVolume(config.camera);
     config.canvas->SetRenderer(config.renderer);
     config.frame->SetCanvas(config.canvas);
  
-
     config.hud = new HUD();
     config.renderer->PostProcessEvent().Attach( *config.hud );
     config.renderer->PreProcessEvent().Attach(*config.soundsystem);
@@ -375,7 +369,6 @@ void SetupScene(Config& config) {
         throw Exception("Setup scene dependencies are not satisfied.");
 
     // Create a root scene node
-
     RenderStateNode* renderStateNode = new RenderStateNode();
     renderStateNode->EnableOption(RenderStateNode::LIGHTING);
     renderStateNode->DisableOption(RenderStateNode::BACKFACE);
@@ -391,7 +384,6 @@ void SetupScene(Config& config) {
     
     // Set scene lighting
     float pFade = 1.4;
-
     PointLightNode* light1 = new PointLightNode();
     light1->ambient = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
     light1->diffuse = Vector<4,float>(0.0, 0.0, 0.0, 1.0);
@@ -427,10 +419,9 @@ void SetupScene(Config& config) {
         new TimeModifier(config.engine.ProcessEvent(),1.00f);
     config.timeModifier = timeModifier;
     //timeModifier->SetFactor(1.23);
-
     timeModifier->ProcessEvent().Attach(*config.particlesystem);
 
-    //init HeightMap
+    // initialize HeightMap
     string filename = DirectoryManager::FindFileInPath("Island/Terrain5.raw");
     UCharTexture2DPtr hMap = 
         UCharTexture2DPtr(new RAWResource(filename, 1024, 1024, 1));
@@ -438,7 +429,6 @@ void SetupScene(Config& config) {
         
     ITexture2DPtr texture =
       ResourceManager<ITexture2D>::Create("Island/ground.tga");
-
     HeightMap* heightMap = new HeightMap(hMap, texture, 300.0, 0.25, 16);
 
     Island* island = new Island(heightMap);
@@ -459,14 +449,13 @@ void SetupScene(Config& config) {
     timeModifier->ProcessEvent().Attach(*oscs);
     tpNode->AddNode(oscs);
 
-    //@todo: Boids have transparent shadows
-    BoidsSystem* boids = config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem,
-                                                        *config.particlesystem,
-                                                        *config.textureLoader,
-                                                        config.scene);
-    config.engine.InitializeEvent().Attach(*boids);
-    timeModifier->ProcessEvent().Attach(*boids);
-    tpNode->AddNode(boids);
+    // @todo: Boids have transparent shadows
+    config.boids = new BoidsSystem(heightMap, oscs,*config.soundsystem, 
+                                   *config.particlesystem,
+                                   *config.textureLoader, config.scene);
+    config.engine.InitializeEvent().Attach(*config.boids);
+    timeModifier->ProcessEvent().Attach(*config.boids);
+    tpNode->AddNode(config.boids);
 
 
     Dragon* dragon = config.dragon = new Dragon(heightMap, *config.boids, target,
@@ -479,7 +468,7 @@ void SetupScene(Config& config) {
     
     // game state logic
     config.gamestate = new GameState(120);
-    boids->BoidSystemEvent().Attach(*config.gamestate);
+    config.boids->BoidSystemEvent().Attach(*config.gamestate);
 
     config.textureLoader->Load(*config.scene);
 
@@ -490,19 +479,17 @@ void SetupScene(Config& config) {
     // Supply the scene to the renderer
     config.canvas->SetScene(config.scene);
 
-    //HUD
+    // HUD
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_QUEUED);
     DragonHUD* hud = new DragonHUD(*config.frame, *config.gamestate,
                                    *config.hud, *config.textureLoader);
     config.textureLoader->SetDefaultReloadPolicy(Renderers::TextureLoader::RELOAD_NEVER);
-    //config.scene->AddNode(hud->GetLayerNode());
     config.engine.ProcessEvent().Attach(*hud);
 
     KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *target, *heightMap,
-                                       *config.mouse, island, dragon, boids,
+                                       *config.mouse, island, dragon, config.boids,
                                        *timeModifier, *config.gamestate, *config.musicplayer,
-                                       *config.oscs, *hud, *config.frame, renderStateNode);
-    //    KeyHandler* key_h = new KeyHandler(*config.camera, *targetNode, *heightMap, island, dragon, boids, *timeModifier, *config.gamestate);
+                                       *config.oscs, *hud, *config.canvas, *config.frame, renderStateNode);
 
     config.engine.InitializeEvent().Attach(*key_h);
     config.engine.ProcessEvent().Attach(*key_h);

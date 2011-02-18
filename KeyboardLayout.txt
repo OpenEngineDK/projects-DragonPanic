@@ -12,6 +12,7 @@ Camera
   arrows    Rotate camera
   pg up     Zoom in
   pg down   Zoom out
+  c  	    switch between game camera and free moving camera
   F1-F5     Different viewpoints (currently disabled)
   F9        Increase global scale (panorama only) (currently disabled)
   F10       Decrease global scale (panorama only) (currently disabled)
@@ -32,9 +33,11 @@ Render states
   3         Toggle state on Island
   4         Toggle state on OscSurface
   5         Toggle state on Target
-  6         Toggle state on ParticleSystem (BreathWeapon)
+  6	    Toggle state on Trees
+  7         Toggle state on ParticleSystem (BreathWeapon)
   8         Decrease number of boids rendered
   9         Increase number of boids rendered
+  0	    Toggle state on HUD
 
 General
 -----------------------------------------------------------

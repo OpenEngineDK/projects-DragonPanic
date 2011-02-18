@@ -52,6 +52,9 @@ namespace OpenEngine {
     namespace Sound {
         class MusicPlayer;
     }
+    namespace Utils {
+        class MoveHandler;
+    }
 }
 
 using namespace OpenEngine::Core;
@@ -59,6 +62,7 @@ using namespace OpenEngine::Display;
 using namespace OpenEngine::Scene;
 using namespace OpenEngine::Devices;
 using namespace OpenEngine::Sound;
+using namespace OpenEngine::Utils;
 
 using std::list;
 
@@ -81,8 +85,13 @@ private:
     GameState& gamestate;
     OscSurface& oscs;
     DragonHUD& hud;
+    IRenderCanvas& canvas;
     IFrame& frame;
     RenderStateNode *rn;
+
+    Camera* freeCamera;
+    MoveHandler* freeCamHandler;
+    bool useGameCamera;
 
     bool done, pause;
 
@@ -115,13 +124,14 @@ public:
                MusicPlayer& musicplayer,
                OscSurface& oscs,
                DragonHUD& hud,
+               IRenderCanvas& canvas,
                IFrame& frame,
                RenderStateNode* rn);
     ~KeyHandler();
 
     void Handle(KeyboardEventArg arg);
-    void HandleUp(Key key);
-    void HandleDown(Key key);
+    void HandleUp(KeyboardEventArg arg);
+    void HandleDown(KeyboardEventArg arg);
 
     void Handle(OpenEngine::Core::InitializeEventArg arg);
     void Handle(OpenEngine::Core::ProcessEventArg arg);
