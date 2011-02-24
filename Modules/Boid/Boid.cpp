@@ -334,8 +334,13 @@ void Boid::HandleFire(Vector<3,float> firePosition, float fireStrength) {
 
 
 void Boid::draw( ) {
+    // save gl state
     GLboolean t = glIsEnabled(GL_BLEND);
     GLboolean l = glIsEnabled(GL_LIGHTING);
+    GLenum source, destination, equation;
+    glGetIntegerv(GL_BLEND_SRC, (GLint*) &source);
+    glGetIntegerv(GL_BLEND_DST, (GLint*) &destination);
+    glGetIntegerv(GL_BLEND_EQUATION, (GLint*) &equation);
 
     glDisable(GL_LIGHTING);
 
@@ -344,6 +349,7 @@ void Boid::draw( ) {
     draw2(false);
  
     // use blend to render shadows
+    glBlendEquation(GL_MIN);
     glEnable(GL_BLEND);
     glPushMatrix();
     glColor4f( 0.0, 0.0, 0.0, 0.3 );
@@ -362,6 +368,9 @@ void Boid::draw( ) {
         glDisable(GL_BLEND);
     if (l)
         glEnable(GL_LIGHTING);
+    glBlendFunc(source, destination);
+    glBlendEquation(equation);
+    CHECK_FOR_GL_ERROR();
 }
 
 void Boid::draw2( bool shadow ) {

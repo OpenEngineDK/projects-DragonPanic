@@ -88,16 +88,16 @@ void Island::toggleRenderState(){
         rsn->DisableOption(RenderStateNode::TEXTURE);
         break;
     case 1: // wireframe
-        rsn->EnableOption(RenderStateNode::TEXTURE);
+        rsn->InheritOption(RenderStateNode::TEXTURE);
         rsn->EnableOption(RenderStateNode::WIREFRAME);
         break;
     case 2: //all off
         enabled = false;
         break;
     default: //render all, reset variables
-        rsn->DisableOption(RenderStateNode::WIREFRAME);
+        rsn->InheritOption(RenderStateNode::WIREFRAME);
         enabled = true;
-        rsn->EnableOption(RenderStateNode::TEXTURE);
+        rsn->InheritOption(RenderStateNode::TEXTURE);
         break;
     }
 }
