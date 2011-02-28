@@ -3,6 +3,7 @@
 
 //inherits from
 #include <Scene/RenderNode.h>
+#include <Core/Ilistener.h>
 
 //templated classes
 #include <Math/Vector.h>
@@ -10,6 +11,9 @@
 //forward reference
 class HeightMap;
 namespace OpenEngine {
+    namespace Core {
+        class InitializeEventArg;
+    }
     namespace Geometry {
         class Face;
     }
@@ -30,7 +34,8 @@ using OpenEngine::Scene::TransformationNode;
 using OpenEngine::Scene::ISceneNodeVisitor;
 using namespace std;
 
-class Island : public RenderNode {
+class Island : public RenderNode, 
+    public OpenEngine::Core::IListener<OpenEngine::Core::InitializeEventArg> {
 private:
     HeightMap* heightMap;
     TransformationNode* trees;
@@ -49,6 +54,7 @@ public:
     ~Island();
 
     virtual void Apply(RenderingEventArg arg, ISceneNodeVisitor& v);
+    void Handle(OpenEngine::Core::InitializeEventArg arg);
 
     void toggleRenderState();
     void toggleRenderStateOnTrees();

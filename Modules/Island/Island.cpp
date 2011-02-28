@@ -10,6 +10,7 @@
 #include <Math/Math.h>
 #include <iostream>
 
+#include <Core/EngineEvents.h>
 #include <Logging/Logger.h>
 #include <Renderers/IRenderingView.h>
 #include <Resources/DirectoryManager.h>
@@ -28,15 +29,22 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
     bRender = enabled = renderTrees = enableTexture = true;
     numberOfRenderStates = 4;
     renderState = numberOfRenderStates-1;
+    numberOfTrees = 0;
 
     rsn = new RenderStateNode();
     this->AddNode(rsn);
     rsn->AddNode(heightMap);
-
-    //initialize trees position
     trees = new TransformationNode();
-    numberOfTrees = 0;
-    for (int xx=-150; xx<150; xx+=10)
+}
+
+Island::~Island() {
+    // No need to delete height-map and trees as they are sub-node
+    // and will be deleted when the scene graph is destroyed.
+}
+
+void Island::Handle(OpenEngine::Core::InitializeEventArg arg) {
+    // initialize trees position
+    for (int xx=-150; xx<150; xx+=10) {
         for (int zz=-150; zz<  0; zz+=10) {
             Vector<3,float> pos(xx+fmod(sin((double)(xx+1000*zz))*100000,10),
                                 0,
@@ -44,29 +52,20 @@ Island::Island(HeightMap* heightMap) : heightMap(heightMap) {
             pos = heightMap->HeightAt(pos);
 
             // only place tree in lanscape where slope is less than maxY
-            //float maxY = 0.8; // max value of normal y coordinate
             float maxAngle = PI/7.5f; // max angle for the normals
-            if (
-                // heightMap->NormalAt(xx,    zz   )[1]>maxY &&
-                // heightMap->NormalAt(xx+10, zz   )[1]>maxY &&
-                // heightMap->NormalAt(xx,    zz+10)[1]>maxY &&
-                // heightMap->NormalAt(xx+10, zz+10)[1]>maxY &&
-                heightMap->SlopeAt(xx,    zz   )<maxAngle &&
-                heightMap->SlopeAt(xx+10, zz   )<maxAngle &&
-                heightMap->SlopeAt(xx,    zz+10)<maxAngle &&
-                heightMap->SlopeAt(xx+10, zz+10)<maxAngle &&
+            if (heightMap->SlopeAt(xx,    zz   ) < maxAngle &&
+                heightMap->SlopeAt(xx+10, zz   ) < maxAngle &&
+                heightMap->SlopeAt(xx,    zz+10) < maxAngle &&
+                heightMap->SlopeAt(xx+10, zz+10) < maxAngle &&
                 pos[1]>2 && // no trees below waterline (lava)
-				(xx*xx+zz*zz)>50*50) { //no trees closer than 50 from center
-	      trees->AddNode(new Tree(pos));
-	      numberOfTrees++;
+				(xx*xx+zz*zz)>50*50) { // no trees closer than 50 from center
+
+                trees->AddNode(new Tree(pos));
+                numberOfTrees++;
             }
         }
+    }
     logger.info << "Number of trees generated: " << numberOfTrees << logger.end;
-}
-
-Island::~Island() {
-    // No need to delete height-map and trees as they are sub-node
-    // and will be deleted when the scene graph is destroyed.
 }
 
 void Island::Apply(RenderingEventArg arg, ISceneNodeVisitor& v) {

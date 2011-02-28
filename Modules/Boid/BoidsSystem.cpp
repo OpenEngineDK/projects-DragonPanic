@@ -208,24 +208,19 @@ float BoidsSystem::getAlignment() {
 }
 
 void BoidsSystem::toggleRenderState() {
-    logger.info << "BoidsSystem status: ";
     enabled = true;
     renderState++;
     renderState %= numberOfRenderStates;
     switch ( renderState ){
     case 0: //without logic
         disableLogic = true;
-        logger.info << "without logic";
         break;
     case 1: //disabled
         enabled = false;
-        logger.info << "disabled";
         break;
     default: //render all, reset variables
         enabled = true;
         disableLogic = false;
-        logger.info << "fully enabled";
         break;
     }
-    logger.info << logger.end;
 }

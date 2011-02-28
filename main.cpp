@@ -58,7 +58,7 @@
 
 // Utilities and logger
 #include <Logging/Logger.h>
-#include <Logging/StreamLogger.h>
+#include <Logging/ColorStreamLogger.h>
 #include <Utils/EventProfiler.h>
 #include <Utils/FPSSurface.h>
 #include <Scene/DotVisitor.h>
@@ -168,16 +168,16 @@ struct Config {
 // Forward declaration of the setup methods
 void SetupResources(Config&);
 void SetupDevices(Config&);
-void SetupDisplay(Config&);
+void SetupDisplay(Config&, bool);
 void SetupRendering(Config&);
 void SetupParticleSystem(Config&);
-void SetupSound(Config&);
+void SetupSound(Config&, bool);
 void SetupScene(Config&);
 void SetupDebugging(Config&);
 
 int main(int argc, char** argv) {
     // Setup logging facilities.
-    Logger::AddLogger(new StreamLogger(&std::cout));
+    Logger::AddLogger(new ColorStreamLogger(&std::cout));
 
     // Print usage info.
     logger.info << "========= ";
@@ -191,15 +191,40 @@ int main(int argc, char** argv) {
     logger.info << "KeyboardLayout.txt in the project repository" << logger.end;
     logger.info << logger.end;
 
+    if (argc != 3) {
+        logger.error << "wrong number of parameters, use fx: <program> --frame --nosound" << logger.end;
+        exit(-1);
+    }
+
+    bool fullscreen = false;
+    if (strcmp(argv[1],"--fullscreen") == 0)
+        fullscreen = true;
+    else if (strcmp(argv[1],"--frame") == 0)
+        fullscreen = false;
+    else {
+        logger.error << "unknown frame parameter" << logger.end;
+        exit(-1);
+    }
+
+    bool sound = true;
+    if (strcmp(argv[2],"--nosound") == 0)
+        sound = false;
+    else if (strcmp(argv[2],"--sound") == 0)
+        sound = true;
+    else {
+        logger.error << "unknown sound parameter" << logger.end;
+        exit(-1);
+    }
+
     // Create an engine and config object
     Engine* engine = new Engine();
     Config config(*engine);
 
     // Setup the engine
     SetupResources(config);
-    SetupDisplay(config);
+    SetupDisplay(config, fullscreen);
     SetupDevices(config);
-    SetupSound(config);
+    SetupSound(config, sound);
     SetupParticleSystem(config);
     SetupRendering(config);
     SetupScene(config);
@@ -208,7 +233,12 @@ int main(int argc, char** argv) {
     SetupDebugging(config);
 
     // Start up the engine.
-    engine->Start();
+    engine->InitializeEvent().Notify(Core::InitializeEventArg());
+    logger.info << "-------------- initialization done --------------" << logger.end;
+
+    engine->StartMainLoop();
+    engine->DeinitializeEvent().Notify(Core::DeinitializeEventArg());
+
 
 #ifdef OE_DEBUG
     // Print out any profiling info
@@ -241,11 +271,10 @@ void SetupParticleSystem(Config& config) {
     config.engine.DeinitializeEvent().Attach(*config.particlesystem);
 }
 
-void SetupSound(Config& config) {
+void SetupSound(Config& config, bool sound) {
     config.soundsystem = new OpenALSoundSystem();
     config.musicplayer = new MusicPlayer(NULL,config.soundsystem);
-    bool enableSound = true;
-    if (enableSound) {
+    if (sound) {
         // setup the sound system
         config.soundsystem->SetMasterGain(1.0);
         config.engine.InitializeEvent().Attach(*config.soundsystem);
@@ -281,7 +310,7 @@ void SetupResources(Config& config) {
     config.resourcesLoaded = true;
 }
 
-void SetupDisplay(Config& config) {
+void SetupDisplay(Config& config, bool fullscreen) {
     if (config.frame         != NULL ||
         config.viewingvolume != NULL ||
         config.camera        != NULL ||
@@ -289,8 +318,11 @@ void SetupDisplay(Config& config) {
         /*config.viewport      != NULL*/)
         throw Exception("Setup display dependencies are not satisfied.");
 
-    config.env = new SDLEnvironment(800, 600);
-    //config.env           = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);    
+    if (fullscreen)
+        config.env = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);
+    else
+        config.env = new SDLEnvironment(800, 600);
+    //config.env = new SDLEnvironment(1440, 900, 32, FRAME_FULLSCREEN);
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );
@@ -433,6 +465,7 @@ void SetupScene(Config& config) {
 
     Island* island = new Island(heightMap);
     config.scene->AddNode(island);
+    config.engine.InitializeEvent().Attach(*island);
 
     Target* target = config.target = new Target(*heightMap);
     TransformationNode* targetNode = target->GetTargetNode();
