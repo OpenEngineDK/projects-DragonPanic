@@ -182,6 +182,9 @@ int main(int argc, char** argv) {
     // Print usage info.
     logger.info << "========= ";
     logger.info << "Running The OpenEngine DragonPanic Project";
+    unsigned int version = OE_VERSION;
+    logger.info << ", version: " << version;
+    logger.info << ", compiled: " << __DATE__ << " " << __TIME__;
     logger.info << " =========" << logger.end;
 
     logger.info << "This project is a simple testing project for OpenEngine.";

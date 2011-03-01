@@ -2,6 +2,14 @@
 # will become the name of the binary target.
 SET( PROJECT_NAME "DragonPanic")
 
+EXECUTE_PROCESS(
+  COMMAND darcs changes --count
+  WORKING_DIRECTORY "${OE_PROJECTS_DIR}/DragonPanic" 
+  OUTPUT_VARIABLE VERSION 
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+MESSAGE("${PROJECT_NAME} version: ${VERSION}")
+ADD_DEFINITIONS(-DOE_VERSION=${VERSION})
+
 # Project source code list
 SET( PROJECT_SOURCES
   # Add all the cpp source files here
