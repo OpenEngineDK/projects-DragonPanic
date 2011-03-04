@@ -3,7 +3,7 @@
 
 //inherits from
 #include <Scene/RenderNode.h>
-#include <Core/Ilistener.h>
+#include <Core/IListener.h>
 
 //templated classes
 #include <Math/Vector.h>
