@@ -10,35 +10,33 @@ darcs /projects/DragonPanic http://openengine.dk/code/projects/DragonPanic
 darcs-dev /projects/DragonPanic fh.daimi.au.dk:/users/cgd/code/projects/DragonPanic
 
 # standard set of extensions
-darcs /extensions/SDL             http://openengine.dk/code/extensions/SDL
-darcs /extensions/HUD             http://openengine.dk/code/extensions/HUD
-darcs /extensions/OpenGLRenderer  http://openengine.dk/code/extensions/OpenGLRenderer
-darcs /extensions/GenericHandlers http://openengine.dk/code/extensions/GenericHandlers
 darcs /extensions/OBJResource     http://openengine.dk/code/extensions/OBJResource
 darcs /extensions/SDLImage     http://openengine.dk/code/extensions/SDLImage
 darcs /extensions/RAWResource     http://openengine.dk/code/extensions/RAWResource
-darcs-dev /extensions/SDL             fh.daimi.au.dk:/users/cgd/code/extensions/SDL
-darcs-dev /extensions/HUD             fh.daimi.au.dk:/users/cgd/code/extensions/HUD
-darcs-dev /extensions/OpenGLRenderer  fh.daimi.au.dk:/users/cgd/code/extensions/OpenGLRenderer
-darcs-dev /extensions/GenericHandlers fh.daimi.au.dk:/users/cgd/code/extensions/GenericHandlers
 darcs-dev /extensions/OBJResource     fh.daimi.au.dk:/users/cgd/code/extensions/OBJResource
 darcs-dev /extensions/SDLImage     fh.daimi.au.dk:/users/cgd/code/extensions/SDLImage
 darcs-dev /extensions/RAWResource     fh.daimi.au.dk:/users/cgd/code/extensions/RAWResource
 
+dist /extensions/SDL/SDL.dist http://openengine.dk/code/extensions/SDL/SDL.dist
+dist /extensions/HUD/HUD.dist http://openengine.dk/code/extensions/HUD/HUD.dist
+dist /extensions/OpenGLRenderer/OpenGLRenderer.dist http://openengine.dk/code/extensions/OpenGLRenderer/OpenGLRenderer.dist
+dist /extensions/GenericHandlers/GenericHandlers.dist http://openengine.dk/code/extensions/GenericHandlers/GenericHandlers.dist
+
+
 # cairo extension
-darcs /extensions/CairoResource http://openengine.dk/code/extensions/CairoResource
-darcs-dev /extensions/CairoResource fh.daimi.au.dk:/users/cgd/code/extensions/CairoResource
+dist /extensions/CairoResource/CairoResource.dist http://openengine.dk/code/extensions/CairoResource/CairoResource.dist
 
 #sound
-darcs /extensions/OpenALSoundSystem http://openengine.dk/code/extensions/OpenALSoundSystem
-darcs /extensions/VorbisResource    http://openengine.dk/code/extensions/VorbisResource
 darcs /extensions/MusicPlayer       http://openengine.dk/code/extensions/MusicPlayer
-darcs-dev /extensions/OpenALSoundSystem fh.daimi.au.dk:/users/cgd/code/extensions/OpenALSoundSystem
-darcs-dev /extensions/VorbisResource    fh.daimi.au.dk:/users/cgd/code/extensions/VorbisResource
 darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extensions/MusicPlayer
+dist /extensions/VorbisResource/VorbisResource.dist http://openengine.dk/code/extensions/VorbisResource/VorbisResource.dist
+dist /extensions/OpenALSoundSystem/OpenALSoundSystem.dist http://openengine.dk/code/extensions/OpenALSoundSystem/OpenALSoundSystem.dist
 
 #particle system
 dist /extensions/OEParticleSystem/OEParticleSystem.dist http://openengine.dk/code/extensions/OEParticleSystem/OEParticleSystem.dist
+
+#commandline parser
+dist /extensions/CommandLineParser/CommandLineParser.dist http://openengine.dk/code/extensions/CommandLineParser/CommandLineParser.dist
 
 # windows libraries
 win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
@@ -54,7 +52,6 @@ win32 /libraries http://openengine.dk/data/libraries/sdlimage-win32.zip
 # os x libraries
 
 # linux libraries
-linux /libraries http://openengine.dk/data/libraries/openal-linux32.tar.gz
 #linux /libraries http://openengine.dk/data/libraries/sdlimage-linux32.tar.gz
 
 
