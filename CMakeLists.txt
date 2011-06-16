@@ -87,4 +87,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   Extensions_OpenALSoundSystem
   Extensions_MusicPlayer
   Extensions_OEParticleSystem
+  Extensions_CommandLineParser
 )

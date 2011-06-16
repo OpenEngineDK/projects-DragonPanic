@@ -61,6 +61,7 @@
 #include <Logging/ColorStreamLogger.h>
 #include <Utils/EventProfiler.h>
 #include <Utils/FPSSurface.h>
+#include <Utils/CommandLineParser.h>
 #include <Scene/DotVisitor.h>
 
 // OERacer utility files
@@ -168,7 +169,7 @@ struct Config {
 // Forward declaration of the setup methods
 void SetupResources(Config&);
 void SetupDevices(Config&);
-void SetupDisplay(Config&, bool);
+void SetupDisplay(Config&, bool, int, int);
 void SetupRendering(Config&);
 void SetupParticleSystem(Config&);
 void SetupSound(Config&, bool);
@@ -194,6 +195,17 @@ int main(int argc, char** argv) {
     logger.info << "KeyboardLayout.txt in the project repository" << logger.end;
     logger.info << logger.end;
 
+    CommandLineParser clp(argc, argv);
+    bool fullscreen = false;
+    clp.registerModule("--fullscreen", fullscreen);
+    bool sound = true;
+    clp.registerModule("--nosound", sound);
+    int width = 800;
+    clp.registerModule("--width", width);
+    int height = 600;
+    clp.registerModule("--height", height);
+    
+    /*
     if (argc != 3) {
         logger.error << "wrong number of parameters, use fx: <program> --frame --nosound" << logger.end;
         exit(-1);
@@ -218,6 +230,7 @@ int main(int argc, char** argv) {
         logger.error << "unknown sound parameter" << logger.end;
         exit(-1);
     }
+    */
 
     // Create an engine and config object
     Engine* engine = new Engine();
@@ -225,7 +238,7 @@ int main(int argc, char** argv) {
 
     // Setup the engine
     SetupResources(config);
-    SetupDisplay(config, fullscreen);
+    SetupDisplay(config, fullscreen, width, height);
     SetupDevices(config);
     SetupSound(config, sound);
     SetupParticleSystem(config);
@@ -313,7 +326,8 @@ void SetupResources(Config& config) {
     config.resourcesLoaded = true;
 }
 
-void SetupDisplay(Config& config, bool fullscreen) {
+void SetupDisplay(Config& config, bool fullscreen, int width, int height)
+{
     if (config.frame         != NULL ||
         config.viewingvolume != NULL ||
         config.camera        != NULL ||
@@ -322,10 +336,9 @@ void SetupDisplay(Config& config, bool fullscreen) {
         throw Exception("Setup display dependencies are not satisfied.");
 
     if (fullscreen)
-        config.env = new SDLEnvironment(1024, 768, 32, FRAME_FULLSCREEN);
+        config.env = new SDLEnvironment(width, height, 32, FRAME_FULLSCREEN);
     else
-        config.env = new SDLEnvironment(800, 600);
-    //config.env = new SDLEnvironment(1440, 900, 32, FRAME_FULLSCREEN);
+        config.env = new SDLEnvironment(width, height);
     config.frame         = &config.env->CreateFrame();
     config.viewingvolume = new InterpolatedViewingVolume(*(new ViewingVolume()));
     config.camera        = new FollowCamera( *config.viewingvolume );

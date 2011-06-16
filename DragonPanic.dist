@@ -10,25 +10,19 @@ darcs /projects/DragonPanic http://openengine.dk/code/projects/DragonPanic
 darcs-dev /projects/DragonPanic fh.daimi.au.dk:/users/cgd/code/projects/DragonPanic
 
 # standard set of extensions
-darcs /extensions/OBJResource     http://openengine.dk/code/extensions/OBJResource
-darcs /extensions/SDLImage     http://openengine.dk/code/extensions/SDLImage
-darcs /extensions/RAWResource     http://openengine.dk/code/extensions/RAWResource
-darcs-dev /extensions/OBJResource     fh.daimi.au.dk:/users/cgd/code/extensions/OBJResource
-darcs-dev /extensions/SDLImage     fh.daimi.au.dk:/users/cgd/code/extensions/SDLImage
-darcs-dev /extensions/RAWResource     fh.daimi.au.dk:/users/cgd/code/extensions/RAWResource
-
 dist /extensions/SDL/SDL.dist http://openengine.dk/code/extensions/SDL/SDL.dist
 dist /extensions/HUD/HUD.dist http://openengine.dk/code/extensions/HUD/HUD.dist
 dist /extensions/OpenGLRenderer/OpenGLRenderer.dist http://openengine.dk/code/extensions/OpenGLRenderer/OpenGLRenderer.dist
 dist /extensions/GenericHandlers/GenericHandlers.dist http://openengine.dk/code/extensions/GenericHandlers/GenericHandlers.dist
-
+dist /extensions/OBJResource/OBJResource.dist http://openengine.dk/code/extensions/OBJResource/OBJResource.dist
+dist /extensions/SDLImage/SDLImage.dist http://openengine.dk/code/extensions/SDLImage/SDLImage.dist
+dist /extensions/RAWResource/RAWResource.dist http://openengine.dk/code/extensions/RAWResource/RAWResource.dist
 
 # cairo extension
 dist /extensions/CairoResource/CairoResource.dist http://openengine.dk/code/extensions/CairoResource/CairoResource.dist
 
 #sound
-darcs /extensions/MusicPlayer       http://openengine.dk/code/extensions/MusicPlayer
-darcs-dev /extensions/MusicPlayer       fh.daimi.au.dk:/users/cgd/code/extensions/MusicPlayer
+dist /extensions/MusicPlayer/MusicPlayer.dist http://openengine.dk/code/extensions/MusicPlayer/MusicPlayer.dist
 dist /extensions/VorbisResource/VorbisResource.dist http://openengine.dk/code/extensions/VorbisResource/VorbisResource.dist
 dist /extensions/OpenALSoundSystem/OpenALSoundSystem.dist http://openengine.dk/code/extensions/OpenALSoundSystem/OpenALSoundSystem.dist
 
@@ -39,22 +33,9 @@ dist /extensions/OEParticleSystem/OEParticleSystem.dist http://openengine.dk/cod
 dist /extensions/CommandLineParser/CommandLineParser.dist http://openengine.dk/code/extensions/CommandLineParser/CommandLineParser.dist
 
 # windows libraries
-win32 /libraries http://openengine.dk/data/libraries/boost-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/glew-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/sdl-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/dlls-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/cairo-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/openal-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/vorbis-win32.zip
-win32 /libraries http://openengine.dk/data/libraries/sdlimage-win32.zip
-
-
 # os x libraries
-
 # linux libraries
 #linux /libraries http://openengine.dk/data/libraries/sdlimage-linux32.tar.gz
-
-
 
 # data
 any /projects/DragonPanic/data      http://www.openengine.dk/data/projects/DragonPanic/Island.zip
