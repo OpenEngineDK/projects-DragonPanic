@@ -2,35 +2,35 @@
 # OpenEngine Distribution file for DragonPanic.
 
 # main repository
-darcs / http://openengine.dk/code/openengine
-darcs-dev / fh.daimi.au.dk:/users/cgd/code/openengine
+git / https://github.com/OpenEngineDK/openengine.git
+git-dev / git@github.com:OpenEngineDK/openengine.git
 
 # DragonPanic project
-darcs /projects/DragonPanic http://openengine.dk/code/projects/DragonPanic
-darcs-dev /projects/DragonPanic fh.daimi.au.dk:/users/cgd/code/projects/DragonPanic
+git /projects/DragonPanic https://github.com/OpenEngineDK/projects-DragonPanic.git
+git-dev /projects/DragonPanic git@github.com:OpenEngineDK/projects-DragonPanic.git
 
 # standard set of extensions
-dist /extensions/SDL/SDL.dist http://openengine.dk/code/extensions/SDL/SDL.dist
-dist /extensions/HUD/HUD.dist http://openengine.dk/code/extensions/HUD/HUD.dist
-dist /extensions/OpenGLRenderer/OpenGLRenderer.dist http://openengine.dk/code/extensions/OpenGLRenderer/OpenGLRenderer.dist
-dist /extensions/GenericHandlers/GenericHandlers.dist http://openengine.dk/code/extensions/GenericHandlers/GenericHandlers.dist
-dist /extensions/OBJResource/OBJResource.dist http://openengine.dk/code/extensions/OBJResource/OBJResource.dist
-dist /extensions/SDLImage/SDLImage.dist http://openengine.dk/code/extensions/SDLImage/SDLImage.dist
-dist /extensions/RAWResource/RAWResource.dist http://openengine.dk/code/extensions/RAWResource/RAWResource.dist
+dist /extensions/SDL/SDL.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-SDL/master/SDL.dist
+dist /extensions/HUD/HUD.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-HUD/master/HUD.dist
+dist /extensions/OpenGLRenderer/OpenGLRenderer.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-OpenGLRenderer/master/OpenGLRenderer.dist
+dist /extensions/GenericHandlers/GenericHandlers.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-GenericHandlers/master/GenericHandlers.dist
+dist /extensions/OBJResource/OBJResource.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-OBJResource/master/OBJResource.dist
+dist /extensions/SDLImage/SDLImage.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-SDLImage/master/SDLImage.dist
+dist /extensions/RAWResource/RAWResource.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-RAWResource/master/RAWResource.dist
 
 # cairo extension
-dist /extensions/CairoResource/CairoResource.dist http://openengine.dk/code/extensions/CairoResource/CairoResource.dist
+dist /extensions/CairoResource/CairoResource.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-CairoResource/master/CairoResource.dist
 
 #sound
-dist /extensions/MusicPlayer/MusicPlayer.dist http://openengine.dk/code/extensions/MusicPlayer/MusicPlayer.dist
-dist /extensions/VorbisResource/VorbisResource.dist http://openengine.dk/code/extensions/VorbisResource/VorbisResource.dist
-dist /extensions/OpenALSoundSystem/OpenALSoundSystem.dist http://openengine.dk/code/extensions/OpenALSoundSystem/OpenALSoundSystem.dist
+dist /extensions/MusicPlayer/MusicPlayer.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-MusicPlayer/master/MusicPlayer.dist
+dist /extensions/VorbisResource/VorbisResource.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-VorbisResource/master/VorbisResource.dist
+dist /extensions/OpenALSoundSystem/OpenALSoundSystem.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-OpenALSoundSystem/master/OpenALSoundSystem.dist
 
 #particle system
-dist /extensions/OEParticleSystem/OEParticleSystem.dist http://openengine.dk/code/extensions/OEParticleSystem/OEParticleSystem.dist
+dist /extensions/OEParticleSystem/OEParticleSystem.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-OEParticleSystem/master/OEParticleSystem.dist
 
 #commandline parser
-dist /extensions/CommandLineParser/CommandLineParser.dist http://openengine.dk/code/extensions/CommandLineParser/CommandLineParser.dist
+dist /extensions/CommandLineParser/CommandLineParser.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-CommandLineParser/master/CommandLineParser.dist
 
 # windows libraries
 # os x libraries
