@@ -6,8 +6,8 @@ git / https://github.com/OpenEngineDK/openengine.git
 git-dev / git@github.com:OpenEngineDK/openengine.git
 
 # DragonPanic project
-git /projects/DragonPanic https://github.com/OpenEngineDK/projects-DragonPanic.git
-git-dev /projects/DragonPanic git@github.com:OpenEngineDK/projects-DragonPanic.git
+git /projects/DragonPanic https://github.com/OpenEngineDK/projects-DragonPanic.git
+git-dev /projects/DragonPanic git@github.com:OpenEngineDK/projects-DragonPanic.git
 
 # standard set of extensions
 dist /extensions/SDL/SDL.dist https://raw.githubusercontent.com/OpenEngineDK/extensions-SDL/master/SDL.dist
