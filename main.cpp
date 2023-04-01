@@ -176,6 +176,26 @@ void SetupSound(Config&, bool);
 void SetupScene(Config&);
 void SetupDebugging(Config&);
 
+
+// Quick'n'dirty engine throttle. Will sleep the process event in an attempt to hit a target framerate
+class EngineThrottle : public IListener<Core::ProcessEventArg> {
+    float target = 60.0;
+public:
+
+    void Handle(Core::ProcessEventArg arg) {
+        float dt = arg.approx / 1000000.0;
+        float fps = 1.0 / dt;
+
+        if (fps > target) {
+            float targetTime = 1 / target;
+            float sleepTime = targetTime - dt;
+            int us = sleepTime * 1000000;
+
+            usleep(us);
+        }
+    }
+};
+
 int main(int argc, char** argv) {
     // Setup logging facilities.
     Logger::AddLogger(new ColorStreamLogger(&std::cout));
@@ -251,6 +271,12 @@ int main(int argc, char** argv) {
     // Start up the engine.
     engine->InitializeEvent().Notify(Core::InitializeEventArg());
     logger.info << "-------------- initialization done --------------" << logger.end;
+
+
+
+    // HACK to keep fps down
+    EngineThrottle *throttle = new EngineThrottle();
+    engine->ProcessEvent().Attach(*throttle);
 
     engine->StartMainLoop();
     engine->DeinitializeEvent().Notify(Core::DeinitializeEventArg());
